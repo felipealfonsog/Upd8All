@@ -4,7 +4,7 @@ import threading
 import getpass
 import subprocess
 
-# Función para mostrar el mensaje de bienvenida
+# Function to print the welcome message
 def print_welcome_message():
     print("""
 Welcome to the Upd8All Updater
@@ -16,11 +16,11 @@ License: BSD 3-Clause (Restrictive)
 ***************************************************************************
 """)
 
-# Funciones para actualizar los paquetes de Pacman, AUR con Yay y Homebrew
+# Functions to update Pacman, AUR with Yay, and Homebrew packages
 def update_pacman(sudo_password):
     print("Updating Pacman packages...")
     print("-------------------------------------")
-    command = "pacman -Syu --noconfirm"
+    command = "sudo pacman -Syu --noconfirm"
     execute_command_with_sudo(command, sudo_password)
 
 def update_yay(sudo_password):
@@ -35,14 +35,14 @@ def update_brew():
     command = "brew update && brew upgrade"
     os.system(command)
 
-# Función para ejecutar un comando con o sin sudo según sea necesario
+# Function to execute a command with or without sudo as needed
 def execute_command_with_sudo(command, sudo_password):
     if command.startswith("sudo"):
         os.system(f'echo "{sudo_password}" | {command}')
     else:
         os.system(command)
 
-# Función para verificar la versión de un paquete en un gestor de paquetes específico
+# Function to check the version of a package in a specific package manager
 def check_package_version(package, package_manager):
     if package_manager == "pacman":
         command = f"pacman -Qi {package} | grep Version"
@@ -57,41 +57,41 @@ def check_package_version(package, package_manager):
     print(f"Checking version of {package} using {package_manager}...")
     os.system(command)
 
-# Función que se ejecuta en un hilo separado para mostrar un mensaje de advertencia si no se ingresa un nombre de paquete en 1 minuto
+# Function executed in a separate thread to show a warning message if no package name is entered within 1 minute
 def timeout_warning():
     print("Time's up. Program execution has ended.")
     sys.exit(0)
 
 def main():
-    # Mostrar mensaje de bienvenida
+    # Print welcome message
     print_welcome_message()
 
-    # Solicitar la contraseña de sudo al inicio del programa
+    # Request sudo password at the start of the program
     sudo_password = getpass.getpass(prompt="Enter your sudo password: ")
 
-    # Actualizar los paquetes
+    # Update packages
     update_pacman(sudo_password)
     update_yay(sudo_password)
     update_brew()
 
-    # Iniciar hilo de temporización
+    # Start timing thread
     timer_thread = threading.Timer(60, timeout_warning)
     timer_thread.start()
 
-    # Solicitar al usuario el nombre del paquete y el gestor de paquetes para verificar su versión
+    # Request package name and package manager to check its version
     package = input("Enter the name of the package to check its version (e.g., gh), or 'q' to quit: ").strip().lower()
 
-    # Verificar si el usuario quiere salir
+    # Check if the user wants to quit
     if package == 'q':
         print("Exiting the program.")
         sys.exit(0)
 
     package_manager = input("Enter the package manager (pacman, yay, brew): ").strip().lower()
 
-    # Cancelar temporizador si el usuario proporciona un nombre de paquete
+    # Cancel timer if the user provides a package name
     timer_thread.cancel()
 
-    # Verificar la versión del paquete especificado
+    # Check the version of the specified package
     check_package_version(package, package_manager)
 
 if __name__ == "__main__":
