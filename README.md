@@ -1,4 +1,4 @@
-# Upd8All
+### Upd8All 🔄
 
 Upd8All is a multi-purpose package updater tool that streamlines the process of keeping packages updated on Arch Linux. With support for Pacman, Yay, and Homebrew, Upd8All automatically handles superuser privileges when needed and notifies the user about important updates, such as the "gh" version in Homebrew. Simplify your life by keeping your system up to date with just one command.
 
@@ -17,16 +17,16 @@ Upd8All is a multi-purpose package updater tool that streamlines the process of 
 [![Vim](https://img.shields.io/badge/--019733?logo=vim)](https://www.vim.org/)
 [![Visual Studio Code](https://img.shields.io/badge/--007ACC?logo=visual%20studio%20code&logoColor=ffffff)](https://code.visualstudio.com/)
 
-## Features
+#### Features
 
 - Supports Pacman, Yay, and Homebrew package managers.
 - Automatically handles superuser privileges.
 - Notifies about important updates, such as the "gh" version in Homebrew.
 - Simplifies the process of keeping your system up to date with one command.
 
-## How to Use
+#### How to Use
 
- - **Clone the Repository:**
+ - Clone the Repository
 
 ```
 git clone https://github.com/felipealfonsog/Upd8All.git
@@ -75,6 +75,6 @@ If you find this project helpful and would like to support its development, ther
 
 Your support and contributions are greatly appreciated! Thank you for your help in making this project better. If you need to mail me, this is the way: f.alfonso@res-ear.ch (I'm Felipe, the Computer Science Engineer behind this idea. Cheers!)
 
-## License
+#### License
 
 This project is licensed under the BSD 3-Clause License. See the [LICENSE](LICENSE) file for details.
