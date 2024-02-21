@@ -85,6 +85,7 @@ def main():
     # Check if the user wants to quit
     if package == 'q':
         print("Exiting the program.")
+        timer_thread.cancel()  # Cancel timer
         sys.exit(0)
 
     package_manager = input("Enter the package manager (pacman, yay, brew): ").strip().lower()
