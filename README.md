@@ -28,15 +28,15 @@ Upd8All is a multi-purpose package updater tool that streamlines the process of 
 
  - **Clone the Repository:**
 
-   ```
-   git clone https://github.com/felipealfonsog/Upd8All.git
-````
+```
+git clone https://github.com/felipealfonsog/Upd8All.git
+```
 
  - Navigate to the Directory:
 
 ```
 cd Upd8All
-````
+```
 
  - Run the Bash Script:
 
