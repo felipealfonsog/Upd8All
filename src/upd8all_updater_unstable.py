@@ -4,21 +4,6 @@ import threading
 import getpass
 import subprocess
 
-# Función para verificar las dependencias del programa
-def check_dependencies():
-    print("Checking dependencies...")
-    python_version = sys.version.split()[0]
-    pip_version = subprocess.check_output(['pip', '--version']).decode().split()[1]
-    print(f"Python {python_version}")
-    print(f"pip {pip_version}")
-
-    # Verificar si pip está instalado
-    try:
-        import some_package
-    except ImportError:
-        print("Installing required libraries using pip...")
-        os.system("python3.11 -m pip install some_package")
-
 # Función para mostrar el mensaje de bienvenida
 def print_welcome_message():
     print("""
@@ -78,9 +63,6 @@ def timeout_warning():
     sys.exit(0)
 
 def main():
-    # Verificar dependencias
-    check_dependencies()
-
     # Mostrar mensaje de bienvenida
     print_welcome_message()
 
@@ -97,7 +79,13 @@ def main():
     timer_thread.start()
 
     # Solicitar al usuario el nombre del paquete y el gestor de paquetes para verificar su versión
-    package = input("Enter the name of the package to check its version (e.g., gh): ").strip().lower()
+    package = input("Enter the name of the package to check its version (e.g., gh), or 'q' to quit: ").strip().lower()
+
+    # Verificar si el usuario quiere salir
+    if package == 'q':
+        print("Exiting the program.")
+        sys.exit(0)
+
     package_manager = input("Enter the package manager (pacman, yay, brew): ").strip().lower()
 
     # Cancelar temporizador si el usuario proporciona un nombre de paquete
