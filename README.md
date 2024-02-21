@@ -75,7 +75,7 @@ cd Upd8All
  - Run the Bash Script:
 
 ```
-bash install.sh
+bash execute.sh
 ```
 
  - Follow the Prompts:
