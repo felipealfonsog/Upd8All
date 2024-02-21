@@ -87,7 +87,6 @@ If you wish to cancel, enter 'n' or 'N'.
  - Enjoy Upd8All:
 Once the script finishes execution, your packages will be updated, and you'll be notified about any important updates.
 
-You can simply copy this Markdown and paste it into your README file.
 
 #### 📝Important (Experimental Project)
 
