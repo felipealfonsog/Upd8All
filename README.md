@@ -29,7 +29,6 @@ Upd8All is a versatile and comprehensive package update tool meticulously crafte
 
 - Enhanced System Stability and Security: Keeping software up-to-date is crucial for maintaining system stability and security. Upd8All empowers users to stay ahead of potential vulnerabilities by providing timely updates for all installed packages. By ensuring that software components are patched and current, Upd8All contributes to a more secure and reliable computing environment for Arch Linux users.
 
-- Community-Driven Development: Upd8All is a product of collaborative effort and community-driven development. Built by passionate Linux enthusiasts and developers, Upd8All embodies the spirit of open-source software, with contributions from users worldwide. The project is continuously evolving, with regular updates and improvements driven by user feedback and community engagement.
 
 #### Installation
 #### Via AUR using YAY
