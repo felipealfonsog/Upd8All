@@ -2,6 +2,7 @@ import os
 import sys
 import threading
 import getpass
+import subprocess
 
 # Function to print the welcome message
 def print_welcome_message():
@@ -67,31 +68,71 @@ def main():
     # Print welcome message
     print_welcome_message()
 
+    # Check if the user has yay installed
+    try:
+        subprocess.run(["yay", "--version"], stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL, check=True)
+        has_yay = True
+    except FileNotFoundError:
+        has_yay = False
+
+    # Check if the user has Homebrew installed
+    try:
+        subprocess.run(["brew", "--version"], stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL, check=True)
+        has_brew = True
+    except FileNotFoundError:
+        has_brew = False
+
     # Request sudo password at the start of the program
     sudo_password = getpass.getpass(prompt="Enter your sudo password: ")
 
     # Update packages
     update_pacman(sudo_password)
-    update_yay(sudo_password)
-    update_brew()
+
+    if has_yay:
+        update_yay(sudo_password)
+    else:
+        print("You do not have Yay installed.")
+
+    if has_brew:
+        update_brew()
+    else:
+        print("You do not have Brew installed.")
 
     # Start timing thread
     timer_thread = threading.Timer(60, timeout_warning)
     timer_thread.start()
 
     # Request package name and package manager to check its version
-    package = input("Enter the name of the package to check its version (e.g., gh), or 'q' to quit: ").strip().lower()
+    print("Select the package manager to check the version:")
+    print("1. Pacman")
+    if has_yay:
+        print("2. Yay")
+    if has_brew:
+        print("3. Brew")
+
+    selected_option = input("Enter the option number (e.g., 1) or 'q' to quit: ").strip().lower()
 
     # Check if the user wants to quit
-    if package == 'q':
+    if selected_option == 'q':
         print("Exiting the program.")
-        timer_thread.cancel()  # Cancel timer
         sys.exit(0)
 
-    package_manager = input("Enter the package manager (pacman, yay, brew): ").strip().lower()
+    package_manager = ""
+    if selected_option == '1':
+        package_manager = "pacman"
+    elif selected_option == '2' and has_yay:
+        package_manager = "yay"
+    elif selected_option == '3' and has_brew:
+        package_manager = "brew"
+    else:
+        print("Invalid option. Exiting the program.")
+        sys.exit(1)
 
     # Cancel timer if the user provides a package name
     timer_thread.cancel()
+
+    # Request package name
+    package = input("Enter the name of the package to check its version (e.g., gh): ").strip().lower()
 
     # Check the version of the specified package
     check_package_version(package, package_manager)
