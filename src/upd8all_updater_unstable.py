@@ -1,6 +1,24 @@
 import os
 import sys
 import threading
+import getpass
+import subprocess
+
+# Función para verificar la existencia de Python y las bibliotecas necesarias
+def check_dependencies():
+    print("Checking dependencies...")
+    try:
+        subprocess.check_call(["python3", "--version"])
+        subprocess.check_call(["pip3", "--version"])
+    except subprocess.CalledProcessError:
+        print("Python and/or pip are not installed.")
+        install_python = input("Would you like to install Python and its necessary libraries? (y/n): ").strip().lower()
+        if install_python == "y":
+            os.system("sudo pacman -Sy --noconfirm python")
+            os.system("sudo pacman -Sy --noconfirm python-pip")
+        else:
+            print("Python and its necessary libraries are required for this program to run.")
+            sys.exit(1)
 
 # Función para mostrar el mensaje de bienvenida
 def print_welcome_message():
@@ -61,11 +79,14 @@ def timeout_warning():
     sys.exit(0)
 
 def main():
+    # Verificar las dependencias
+    check_dependencies()
+    
     # Mostrar mensaje de bienvenida
     print_welcome_message()
 
     # Solicitar la contraseña de sudo al inicio del programa
-    sudo_password = input("Enter your sudo password: ")
+    sudo_password = getpass.getpass(prompt="Enter your sudo password: ")
 
     # Actualizar los paquetes
     update_pacman(sudo_password)
@@ -77,11 +98,17 @@ def main():
     timer_thread.start()
 
     # Solicitar al usuario el nombre del paquete y el gestor de paquetes para verificar su versión
-    package = input("Enter the name of the package to check its version (e.g., gh): ").strip().lower()
-    package_manager = input("Enter the package manager (pacman, yay, brew): ").strip().lower()
+    package = input("Enter the name of the package to check its version (e.g., gh), or press 'q' to exit: ").strip().lower()
 
-    # Cancelar temporizador si el usuario proporciona un nombre de paquete
-    timer_thread.cancel()
+    # Cancelar temporizador si el usuario proporciona un nombre de paquete o presiona 'q' para salir
+    if package == 'q':
+        print("Exiting the program...")
+        timer_thread.cancel()
+        sys.exit(0)
+    else:
+        timer_thread.cancel()
+
+    package_manager = input("Enter the package manager (pacman, yay, brew): ").strip().lower()
 
     # Verificar la versión del paquete especificado
     check_package_version(package, package_manager)
