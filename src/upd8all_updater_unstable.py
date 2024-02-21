@@ -16,19 +16,21 @@ License: BSD 3-Clause (Restrictive)
 ***************************************************************************
 """)
 
-# Functions to update Pacman, AUR with Yay, and Homebrew packages
+# Function to update Pacman packages
 def update_pacman(sudo_password):
     print("Updating Pacman packages...")
     print("-------------------------------------")
-    command = "sudo pacman -Syu --noconfirm"
-    execute_command_with_sudo(command, sudo_password)
+    command = f"echo {sudo_password} | sudo -S pacman -Syu --noconfirm"
+    os.system(command)
 
+# Function to update AUR packages with Yay
 def update_yay(sudo_password):
     print("Updating AUR packages with Yay...")
     print("-------------------------------------")
-    command = "yay -Syu --noconfirm"
-    execute_command_with_sudo(command, sudo_password)
+    command = f"echo {sudo_password} | yay -Syu --noconfirm"
+    os.system(command)
 
+# Function to update packages with Homebrew
 def update_brew():
     print("Updating packages with Homebrew...")
     print("-------------------------------------")
