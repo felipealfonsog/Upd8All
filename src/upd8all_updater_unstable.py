@@ -1,28 +1,31 @@
 import os
 import sys
+import threading
 
+# Función para mostrar el mensaje de bienvenida
 def print_welcome_message():
     print("""
 Welcome to the Upd8All Updater
 =======================================
-Description:  is a multi-purpose package updater tool that streamlines the process 
-of keeping packages updated on Arch Linux.
+Description: Upd8All is a versatile and comprehensive package update tool meticulously 
+crafted to cater to the needs of Arch Linux users.
 Creator: Felipe Alfonso Gonzalez - github.com/felipealfonsog - f.alfonso@res-ear.ch
 License: BSD 3-Clause (Restrictive)
 ***************************************************************************
 """)
 
-def update_pacman():
+# Funciones para actualizar los paquetes de Pacman, AUR con Yay y Homebrew
+def update_pacman(sudo_password):
     print("Updating Pacman packages...")
     print("-------------------------------------")
-    command = "sudo pacman -Syu --noconfirm"
-    os.system(command)
+    command = "pacman -Syu --noconfirm"
+    execute_command_with_sudo(command, sudo_password)
 
-def update_yay():
+def update_yay(sudo_password):
     print("Updating AUR packages with Yay...")
     print("-------------------------------------")
     command = "yay -Syu --noconfirm"
-    os.system(command)
+    execute_command_with_sudo(command, sudo_password)
 
 def update_brew():
     print("Updating packages with Homebrew...")
@@ -30,13 +33,21 @@ def update_brew():
     command = "brew update && brew upgrade"
     os.system(command)
 
+# Función para ejecutar un comando con o sin sudo según sea necesario
+def execute_command_with_sudo(command, sudo_password):
+    if command.startswith("sudo"):
+        os.system(f'echo "{sudo_password}" | {command}')
+    else:
+        os.system(command)
+
+# Función para verificar la versión de un paquete en un gestor de paquetes específico
 def check_package_version(package, package_manager):
     if package_manager == "pacman":
-        command = f"{package_manager} -Qi {package} | grep Version"
+        command = f"pacman -Qi {package} | grep Version"
     elif package_manager == "yay":
-        command = f"{package_manager} -Si {package} | grep Version"
+        command = f"yay -Si {package} | grep Version"
     elif package_manager == "brew":
-        command = f"{package_manager} info {package} | grep -E 'stable '"
+        command = f"brew info {package} | grep -E 'stable '"
     else:
         print(f"Package manager {package_manager} not recognized.")
         return
@@ -44,19 +55,35 @@ def check_package_version(package, package_manager):
     print(f"Checking version of {package} using {package_manager}...")
     os.system(command)
 
+# Función que se ejecuta en un hilo separado para mostrar un mensaje de advertencia si no se ingresa un nombre de paquete en 1 minuto
+def timeout_warning():
+    print("Time's up. Program execution has ended.")
+    sys.exit(0)
+
 def main():
+    # Mostrar mensaje de bienvenida
     print_welcome_message()
-    
-    if os.geteuid() == 0:
-        print("Error: Please do not run this script as root or using sudo.")
-        sys.exit(1)
-    update_pacman()
-    update_yay()
+
+    # Solicitar la contraseña de sudo al inicio del programa
+    sudo_password = input("Enter your sudo password: ")
+
+    # Actualizar los paquetes
+    update_pacman(sudo_password)
+    update_yay(sudo_password)
     update_brew()
-    
+
+    # Iniciar hilo de temporización
+    timer_thread = threading.Timer(60, timeout_warning)
+    timer_thread.start()
+
+    # Solicitar al usuario el nombre del paquete y el gestor de paquetes para verificar su versión
     package = input("Enter the name of the package to check its version (e.g., gh): ").strip().lower()
     package_manager = input("Enter the package manager (pacman, yay, brew): ").strip().lower()
-    
+
+    # Cancelar temporizador si el usuario proporciona un nombre de paquete
+    timer_thread.cancel()
+
+    # Verificar la versión del paquete especificado
     check_package_version(package, package_manager)
 
 if __name__ == "__main__":
