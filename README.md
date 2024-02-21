@@ -24,6 +24,40 @@ Upd8All is a multi-purpose package updater tool that streamlines the process of 
 - Notifies about important updates, such as the "gh" version in Homebrew.
 - Simplifies the process of keeping your system up to date with one command.
 
+
+#### Installation
+#### Via AUR using YAY
+
+[![AUR](https://img.shields.io/aur/version/upd8all)](https://aur.archlinux.org/packages/upd8all)
+
+<!-- 
+[![AUR](https://img.shields.io/aur/version/upd8all.svg)](https://aur.archlinux.org/packages/upd8all)
+-->
+
+<!-- 
+https://aur.archlinux.org/packages/upd8all
+-->
+
+Upd8All is available on AUR (Arch User Repository), and it can be installed using the `yay` package manager. Follow the steps below to install Term Notes:
+
+1. Make sure you have `yay` installed. If not, you can install it with the following command:
+   
+   ```
+   sudo pacman -S yay
+   ```
+   Once yay is installed, you can install Term PDF by running the following command:
+   
+   ```
+   yay -S upd8all
+   ```
+This command will automatically fetch the package from AUR and handle the installation process for you.
+
+Then, run it with the following command:
+
+```
+apd8all
+```
+
 #### How to Use
 
  - Clone the Repository
