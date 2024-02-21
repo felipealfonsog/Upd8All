@@ -38,7 +38,7 @@ Upd8All is a multi-purpose package updater tool that streamlines the process of 
 https://aur.archlinux.org/packages/upd8all
 -->
 
-Upd8All is available on AUR (Arch User Repository), and it can be installed using the `yay` package manager. Follow the steps below to install Term Notes:
+Upd8All is available on AUR (Arch User Repository), and it can be installed using the `yay` package manager. Follow the steps below to install:
 
 1. Make sure you have `yay` installed. If not, you can install it with the following command:
    
@@ -87,7 +87,6 @@ If you wish to cancel, enter 'n' or 'N'.
  - Enjoy Upd8All:
 Once the script finishes execution, your packages will be updated, and you'll be notified about any important updates.
 
-You can simply copy this Markdown and paste it into your README file.
 
 #### 📝Important (Experimental Project)
 
