@@ -58,7 +58,7 @@ Then, run it with the following command:
 apd8all
 ```
 
-### How to Use cloning the package: 
+### Cloning the Repository: 
 
  - Clone the Repository
 
