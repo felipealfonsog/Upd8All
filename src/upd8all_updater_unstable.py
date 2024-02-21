@@ -4,18 +4,6 @@ import threading
 import getpass
 import subprocess
 
-# Función para mostrar el mensaje de bienvenida
-def print_welcome_message():
-    print("""
-Welcome to the Upd8All Updater
-=======================================
-Description: Upd8All is a versatile and comprehensive package update tool meticulously 
-crafted to cater to the needs of Arch Linux users.
-Creator: Felipe Alfonso Gonzalez - github.com/felipealfonsog - f.alfonso@res-ear.ch
-License: BSD 3-Clause (Restrictive)
-***************************************************************************
-""")
-
 # Función para verificar las dependencias del programa
 def check_dependencies():
     print("Checking dependencies...")
@@ -29,8 +17,19 @@ def check_dependencies():
         import some_package
     except ImportError:
         print("Installing required libraries using pip...")
-        sudo_password = getpass.getpass(prompt="Enter your sudo password: ")
-        os.system(f"echo '{sudo_password}' | sudo -S pip install some_package")
+        os.system("python3.11 -m pip install some_package")
+
+# Función para mostrar el mensaje de bienvenida
+def print_welcome_message():
+    print("""
+Welcome to the Upd8All Updater
+=======================================
+Description: Upd8All is a versatile and comprehensive package update tool meticulously 
+crafted to cater to the needs of Arch Linux users.
+Creator: Felipe Alfonso Gonzalez - github.com/felipealfonsog - f.alfonso@res-ear.ch
+License: BSD 3-Clause (Restrictive)
+***************************************************************************
+""")
 
 # Funciones para actualizar los paquetes de Pacman, AUR con Yay y Homebrew
 def update_pacman(sudo_password):
