@@ -18,7 +18,7 @@ License: BSD 3-Clause (Restrictive)
 def update_pacman(sudo_password):
     print("Updating Pacman packages...")
     print("-------------------------------------")
-    command = "pacman -Syu --noconfirm"
+    command = "sudo pacman -Syu --noconfirm"
     execute_command_with_sudo(command, sudo_password)
 
 def update_yay(sudo_password):
