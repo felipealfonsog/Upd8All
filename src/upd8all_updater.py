@@ -84,6 +84,7 @@ def main():
 
     # Request sudo password at the start of the program
     sudo_password = getpass.getpass(prompt="Enter your sudo password: ")
+    print()  # Add a newline after entering the password
 
     # Update packages
     update_pacman(sudo_password)
@@ -115,6 +116,7 @@ def main():
     # Check if the user wants to quit
     if selected_option == 'q':
         print("Exiting the program.")
+        timer_thread.cancel()  # Cancel the timer immediately
         sys.exit(0)
 
     package_manager = ""
