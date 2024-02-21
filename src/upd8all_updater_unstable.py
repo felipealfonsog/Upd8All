@@ -29,6 +29,7 @@ def check_dependencies():
         import some_package
     except ImportError:
         print("Installing required libraries using pip...")
+        sudo_password = getpass.getpass(prompt="Enter your sudo password: ")
         os.system(f"echo '{sudo_password}' | sudo -S pip install some_package")
 
 # Funciones para actualizar los paquetes de Pacman, AUR con Yay y Homebrew
@@ -98,10 +99,6 @@ def main():
 
     # Solicitar al usuario el nombre del paquete y el gestor de paquetes para verificar su versión
     package = input("Enter the name of the package to check its version (e.g., gh): ").strip().lower()
-    if package.lower() == 'q':
-        print("Program execution terminated by user.")
-        sys.exit(0)
-    
     package_manager = input("Enter the package manager (pacman, yay, brew): ").strip().lower()
 
     # Cancelar temporizador si el usuario proporciona un nombre de paquete
