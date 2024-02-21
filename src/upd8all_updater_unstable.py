@@ -3,6 +3,9 @@ import sys
 import threading
 import getpass
 import subprocess
+import pty
+import time
+import select
 
 # Function to print the welcome message
 def print_welcome_message():
@@ -18,31 +21,57 @@ License: BSD 3-Clause (Restrictive)
 
 # Function to update Pacman packages
 def update_pacman(sudo_password):
+    print("-------------------------------------")
     print("Updating Pacman packages...")
     print("-------------------------------------")
     command = f"echo {sudo_password} | sudo -S pacman -Syu --noconfirm"
-    os.system(command)
+    execute_command_with_sudo(command, sudo_password)
+    print("-------------------------------------")
 
 # Function to update AUR packages with Yay
 def update_yay(sudo_password):
+    print("-------------------------------------")
     print("Updating AUR packages with Yay...")
     print("-------------------------------------")
-    command = f"echo {sudo_password} | yay -Syu --noconfirm"
-    os.system(command)
+    command = f"yay -Syu --noconfirm"
+    execute_command_with_sudo(command, sudo_password)
+    print("-------------------------------------")
 
 # Function to update packages with Homebrew
 def update_brew():
+    print("-------------------------------------")
     print("Updating packages with Homebrew...")
     print("-------------------------------------")
     command = "brew update && brew upgrade"
     os.system(command)
+    print("-------------------------------------")
 
 # Function to execute a command with or without sudo as needed
 def execute_command_with_sudo(command, sudo_password):
-    if command.startswith("sudo"):
-        os.system(f'echo "{sudo_password}" | {command}')
-    else:
-        os.system(command)
+    master, slave = pty.openpty()
+    proc = subprocess.Popen(
+        command,
+        shell=True,
+        stdin=subprocess.PIPE,
+        stdout=slave,
+        stderr=slave,
+        close_fds=True
+    )
+
+    # Send sudo password
+    os.write(master, (sudo_password + "\n").encode())
+    os.close(master)
+
+    # Read output
+    while True:
+        r, _, _ = select.select([slave], [], [])
+        if r:
+            output = os.read(slave, 1024).decode().strip()
+            if not output:
+                break
+            print(output)
+
+    proc.wait()
 
 # Function to check the version of a package in a specific package manager
 def check_package_version(package, package_manager):
