@@ -84,6 +84,7 @@ def main():
 
     # Request sudo password at the start of the program
     sudo_password = getpass.getpass(prompt="Enter your sudo password: ")
+    print()  # Add a newline after entering the password
 
     # Update packages
     update_pacman(sudo_password)
