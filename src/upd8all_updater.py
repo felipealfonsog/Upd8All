@@ -18,7 +18,7 @@ def update_brew():
 
 def check_gh_update():
     try:
-        command = "brew info gh"
+        command = "gh --version"
         output = os.popen(command).read()
         lines = output.splitlines()
         for line in lines:
