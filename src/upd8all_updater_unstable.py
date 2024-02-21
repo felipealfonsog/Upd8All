@@ -33,7 +33,7 @@ def update_yay(sudo_password):
     print("-------------------------------------")
     print("Updating AUR packages with Yay...")
     print("-------------------------------------")
-    command = f"yay -Syu --noconfirm"
+    command = f"echo {sudo_password} | sudo -S yay -Syu --noconfirm"
     execute_command_with_sudo(command, sudo_password)
     print("-------------------------------------")
 
