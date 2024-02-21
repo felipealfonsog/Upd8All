@@ -116,6 +116,7 @@ def main():
     # Check if the user wants to quit
     if selected_option == 'q':
         print("Exiting the program.")
+        timer_thread.cancel()  # Cancel the timer immediately
         sys.exit(0)
 
     package_manager = ""
