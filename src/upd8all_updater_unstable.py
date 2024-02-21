@@ -3,58 +3,40 @@ import sys
 
 def print_welcome_message():
     print("""
-░█─░█ █▀▀█ █▀▀▄ ▄▀▀▄ ─█▀▀█ █── █── 
-░█─░█ █──█ █──█ ▄▀▀▄ ░█▄▄█ █── █── 
-─▀▄▄▀ █▀▀▀ ▀▀▀─ ▀▄▄▀ ░█─░█ ▀▀▀ ▀▀▀
-
-
-  ╔═══════════════════════════════════════╗
-  ║                                       ║
-  ║   ~ Upd8All ~                         ║
-  ║   Developed with ❤️ by                 ║
-  ║   Felipe Alfonso González L.          ║
-  ║   Computer Science Engineer           ║
-  ║   Chile                               ║
-  ║                                       ║
-  ║   Contact: f.alfonso@res-ear.ch       ║
-  ║   Licensed under BSD v3               ║
-  ║   GitHub: github.com/felipealfonsog   ║
-  ║   LinkedIn:                           ║
-  ║   linkedin.com/in/felipealfonsog      ║
-  ║                                       ║
-  ╚═══════════════════════════════════════╝
-
-
 Welcome to the Upd8All Updater
 =======================================
-Description:  is a multi-platform package updater tool that streamlines the process of keeping packages updated on Arch Linux.
+Description:  is a multi-purpose package updater tool that streamlines the process 
+of keeping packages updated on Arch Linux.
 Creator: Felipe Alfonso Gonzalez - github.com/felipealfonsog - f.alfonso@res-ear.ch
-License: BSD v3 (Restrictive)
+License: BSD 3-Clause (Restrictive)
 ***************************************************************************
 """)
 
 def update_pacman():
     print("Updating Pacman packages...")
+    print("-------------------------------------")
     command = "sudo pacman -Syu --noconfirm"
     os.system(command)
 
 def update_yay():
     print("Updating AUR packages with Yay...")
+    print("-------------------------------------")
     command = "yay -Syu --noconfirm"
     os.system(command)
 
 def update_brew():
     print("Updating packages with Homebrew...")
+    print("-------------------------------------")
     command = "brew update && brew upgrade"
     os.system(command)
 
 def check_package_version(package, package_manager):
     if package_manager == "pacman":
-        command = f"{package_manager} --version"
+        command = f"{package_manager} -Qi {package} | grep Version"
     elif package_manager == "yay":
-        command = f"{package_manager} --version"
+        command = f"{package_manager} -Si {package} | grep Version"
     elif package_manager == "brew":
-        command = f"{package_manager} --version"
+        command = f"{package_manager} info {package} | grep -E 'stable '"
     else:
         print(f"Package manager {package_manager} not recognized.")
         return
