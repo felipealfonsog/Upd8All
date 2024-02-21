@@ -2,7 +2,6 @@ import os
 import sys
 import threading
 import getpass
-import subprocess
 
 # Function to print the welcome message
 def print_welcome_message():
