@@ -24,13 +24,17 @@ Developed with love from Chile.
 
 # Function to execute a command with sudo as needed
 def execute_command_with_sudo(command, sudo_password):
+    # Set environment variable to prevent sudo from asking for password
+    env = os.environ.copy()
+    env['SUDO_ASKPASS'] = '/bin/false'
+    
     proc = subprocess.Popen(
         ["sudo", "-S", *command.split()],
         stdin=subprocess.PIPE,
         stdout=sys.stdout,
         stderr=sys.stderr,
         universal_newlines=True,
-        env={'SUDO_ASKPASS': '/bin/false'}  # Set environment variable to prevent sudo from asking for password
+        env=env  # Pass the modified environment variable
     )
 
     # Send sudo password
