@@ -24,15 +24,16 @@ def execute_command_with_sudo(command):
     proc = subprocess.Popen(
         ["sudo", "-S", *command.split()],
         stdin=subprocess.PIPE,
-        stdout=subprocess.PIPE,
-        stderr=subprocess.PIPE,
+        stdout=subprocess.DEVNULL,
+        stderr=subprocess.DEVNULL,
         universal_newlines=True
     )
 
     # Send sudo password
     stdout, stderr = proc.communicate(input=sudo_password + '\n')
-    print(stdout)
-    print(stderr)
+    if proc.returncode != 0:
+        print(f"Error executing command with sudo: {command}")
+        sys.exit(1)
 
 # Function to update Pacman packages
 def update_pacman():
