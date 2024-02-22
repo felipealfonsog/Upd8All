@@ -22,25 +22,30 @@ License: BSD 3-Clause (Restrictive)
 # Function to execute a command with sudo as needed
 def execute_command_with_sudo(command, sudo_password):
     if command.startswith("sudo"):
+        master, slave = pty.openpty()
         proc = subprocess.Popen(
             command,
             shell=True,
             stdin=subprocess.PIPE,
-            stdout=subprocess.PIPE,
-            stderr=subprocess.PIPE,
-            universal_newlines=True
+            stdout=slave,
+            stderr=slave,
+            close_fds=True
         )
 
         # Send sudo password
-        sudo_prompt = proc.communicate(f"{sudo_password}\n")[1]
-        if "Sorry" in sudo_prompt:  # If "Sorry" in sudo prompt, password was incorrect
-            print("Incorrect sudo password. Exiting.")
-            sys.exit(1)
+        os.write(master, (sudo_password + "\n").encode())
+        os.close(master)
 
         # Read output
-        stdout, stderr = proc.communicate()
-        print(stdout)
-        print(stderr)
+        while True:
+            r, _, _ = select.select([slave], [], [])
+            if r:
+                output = os.read(slave, 1024).decode().strip()
+                if not output:
+                    break
+                print(output)
+
+        proc.wait()
     else:
         os.system(command)
 
@@ -66,13 +71,12 @@ def update_yay(sudo_password):
 
 # Function to update packages with Homebrew
 def update_brew():
-    print("\nUpdating packages with Homebrew...")
+    print("Updating packages with Homebrew...")
     print("-------------------------------------")
     command = "brew update && brew upgrade"
-
     os.system(command)
     print("\n-----------------------------------\n")
-    
+
 # Function to check the version of a package in a specific package manager
 def check_package_version(package, package_manager):
     if package_manager == "pacman":
