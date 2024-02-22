@@ -153,6 +153,7 @@ def main():
     print("\nNote: If no further input is provided within 1 minute, the program will terminate.\n")
 
     # Request package name and package manager to check its version
+    option_selected = False
     while True:
         # Check if the timer has expired
         if not timer_thread.is_alive():
@@ -177,12 +178,15 @@ def main():
         package_manager = ""
         if selected_option == '1':
             package_manager = "pacman"
+            option_selected = True
             break
         elif selected_option == '2' and has_yay:
             package_manager = "yay"
+            option_selected = True
             break
         elif selected_option == '3' and has_brew:
             package_manager = "brew"
+            option_selected = True
             break
         else:
             print("\nInvalid option. Please enter a valid option number or 'q' to quit.\n")
@@ -190,6 +194,11 @@ def main():
 
     # Cancel timer if the user provides a package name
     timer_thread.cancel()
+
+    # If the user hasn't selected any option, just exit
+    if not option_selected:
+        print("\nTime's up. Program execution has ended.\n")
+        sys.exit(0)
 
     # Request package name
     package = input("Enter the name of the package to check its version (e.g., gh): ").strip().lower()
