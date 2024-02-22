@@ -69,9 +69,10 @@ def update_brew():
     print("\nUpdating packages with Homebrew...")
     print("-------------------------------------")
     command = "brew update && brew upgrade"
-    print("\n-----------------------------------\n")
-    os.system(command)
 
+    os.system(command)
+    print("\n-----------------------------------\n")
+    
 # Function to check the version of a package in a specific package manager
 def check_package_version(package, package_manager):
     if package_manager == "pacman":
