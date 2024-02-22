@@ -31,18 +31,16 @@ def execute_command_with_sudo(command, sudo_password):
     proc = subprocess.Popen(
         ["sudo", "-S", *command.split()],
         stdin=subprocess.PIPE,
-        stdout=sys.stdout,
+        stdout=subprocess.PIPE,  # Changed stdout to PIPE to suppress sudo prompt
         stderr=sys.stderr,
         universal_newlines=True,
         env=env  # Pass the modified environment variable
     )
 
     # Send sudo password
-    proc.stdin.write(sudo_password + '\n')
-    proc.stdin.flush()
+    proc.communicate(sudo_password + '\n')[0]  # Pass the password directly to communicate
 
     # Wait for the process to complete
-    proc.communicate()
     if proc.returncode != 0:
         print(f"Error executing command with sudo: {command}")
         sys.exit(1)
@@ -153,13 +151,7 @@ def main():
     print("\nNote: If no further input is provided within 1 minute, the program will terminate.\n")
 
     # Request package name and package manager to check its version
-    option_selected = False
     while True:
-        # Check if the timer has expired
-        if not timer_thread.is_alive():
-            print("\nTime's up. Program execution has ended.\n")
-            sys.exit(0)
-
         print("Select the package manager to check the version:")
         print("1. Pacman")
         if has_yay:
@@ -178,33 +170,23 @@ def main():
         package_manager = ""
         if selected_option == '1':
             package_manager = "pacman"
-            option_selected = True
-            break
         elif selected_option == '2' and has_yay:
             package_manager = "yay"
-            option_selected = True
-            break
         elif selected_option == '3' and has_brew:
             package_manager = "brew"
-            option_selected = True
-            break
         else:
             print("\nInvalid option. Please enter a valid option number or 'q' to quit.\n")
             continue
 
-    # Cancel timer if the user provides a package name
-    timer_thread.cancel()
+        # Cancel timer if the user provides a package manager option
+        timer_thread.cancel()
 
-    # If the user hasn't selected any option, just exit
-    if not option_selected:
-        print("\nTime's up. Program execution has ended.\n")
-        sys.exit(0)
+        # Request package name
+        package = input("Enter the name of the package to check its version (e.g., gh): ").strip().lower()
 
-    # Request package name
-    package = input("Enter the name of the package to check its version (e.g., gh): ").strip().lower()
-
-    # Check the version of the specified package
-    check_package_version(package, package_manager)
+        # Check the version of the specified package
+        check_package_version(package, package_manager)
+        break
 
 if __name__ == "__main__":
     main()
