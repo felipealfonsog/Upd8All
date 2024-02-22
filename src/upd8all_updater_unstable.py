@@ -49,7 +49,7 @@ def execute_command_with_sudo(command, sudo_password):
 def update_pacman():
     print("Updating Pacman packages...")
     print("-------------------------------------")
-    command = "sudo pacman -Syu --noconfirm"
+    command = "pacman -Syu --noconfirm"
     execute_command_with_sudo(command, sudo_password)
 
 # Function to update AUR packages with Yay
