@@ -22,41 +22,40 @@ License: BSD 3-Clause (Restrictive)
 def execute_command_with_sudo(command, sudo_password):
     master, slave = pty.openpty()
     proc = subprocess.Popen(
-        command,
-        shell=True,
+        ["sudo", "-S"] + command.split(),
         stdin=subprocess.PIPE,
-        stdout=slave,
-        stderr=slave,
-        close_fds=True
+        stdout=subprocess.PIPE,
+        stderr=subprocess.PIPE,
+        universal_newlines=True
     )
 
     # Send sudo password
-    os.write(master, (sudo_password + "\n").encode())
-    os.close(master)
+    sudo_prompt = proc.communicate(f"{sudo_password}\n")[1]
+    if "Sorry" in sudo_prompt:  # If "Sorry" in sudo prompt, password was incorrect
+        print("Incorrect sudo password. Exiting.")
+        sys.exit(1)
 
     # Read output
     while True:
-        r, _, _ = select.select([slave], [], [])
-        if r:
-            output = os.read(slave, 1024).decode().strip()
-            if not output:
-                break
-            print(output)
-
+        output = proc.stdout.readline()
+        if output == '' and proc.poll() is not None:
+            break
+        if output:
+            print(output.strip())
     proc.wait()
 
 # Function to update Pacman packages
 def update_pacman(sudo_password):
     print("Updating Pacman packages...")
     print("-------------------------------------")
-    command = f"sudo pacman -Syu --noconfirm"
+    command = "pacman -Syu --noconfirm"
     execute_command_with_sudo(command, sudo_password)
 
 # Function to update AUR packages with Yay
 def update_yay(sudo_password):
     print("Updating AUR packages with Yay...")
     print("-------------------------------------")
-    command = f"yay -Syu --noconfirm"
+    command = "yay -Syu --noconfirm"
     execute_command_with_sudo(command, sudo_password)
 
 # Function to update packages with Homebrew
