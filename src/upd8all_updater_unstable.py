@@ -100,14 +100,21 @@ def check_package_version(package, package_manager):
     
     print(f"Checking version of {package} using {package_manager}...")
     os.system(command)
+    
+# Variable to track if a valid option has been chosen before timeout
+valid_option_chosen = False
 
 # Function executed in a separate thread to show a warning message if no package name is entered within 1 minute
 def timeout_warning():
+    global valid_option_chosen
+    if not valid_option_chosen:
+        print("\nInvalid option (Or, you didn't choose any option above). Exiting the program.\n")
     print("\nTime's up. Program execution has ended.\n")
-    sys.stdout.flush()  # Flush the output buffer
     sys.exit(0)
 
 def main():
+    global valid_option_chosen
+
     # Print welcome message
     print_welcome_message()
 
@@ -174,9 +181,13 @@ def main():
     elif selected_option == '3' and has_brew:
         package_manager = "brew"
     else:
-        print("\nInvalid option (Or, you didn't choose any option above). Exiting the program.\n")
-        sys.stdout.flush()  # Flush the output buffer
+        # Set the flag to indicate that an invalid option has been chosen
+        valid_option_chosen = False
+        print("\nInvalid option. Please enter a valid option number or 'q' to quit.\n")
         sys.exit(1)
+
+    # Set the flag to indicate that a valid option has been chosen
+    valid_option_chosen = True
 
     # Cancel timer if the user provides a package name
     timer_thread.cancel()
@@ -186,6 +197,9 @@ def main():
 
     # Check the version of the specified package
     check_package_version(package, package_manager)
+
+    # Terminate the program after processing user input
+    sys.exit(0)
 
 if __name__ == "__main__":
     main()
