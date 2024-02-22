@@ -29,7 +29,7 @@ def execute_command_with_sudo(command):
         universal_newlines=True
     )
 
-    # Read output
+    # Send sudo password
     stdout, stderr = proc.communicate(input=sudo_password + '\n')
     print(stdout)
     print(stderr)
@@ -38,7 +38,7 @@ def execute_command_with_sudo(command):
 def update_pacman():
     print("Updating Pacman packages...")
     print("-------------------------------------")
-    command = "sudo pacman -Syu --noconfirm"
+    command = "pacman -Syu --noconfirm"
     execute_command_with_sudo(command)
 
 # Function to update AUR packages with Yay
