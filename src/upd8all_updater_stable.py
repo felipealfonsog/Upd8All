@@ -3,8 +3,6 @@ import sys
 import threading
 import getpass
 import subprocess
-import select
-import pty
 
 # Function to print the welcome message
 def print_welcome_message():
@@ -18,41 +16,19 @@ License: BSD 3-Clause (Restrictive)
 ***************************************************************************
 """)
 
-# Function to execute a command with sudo as needed
-def execute_command_with_sudo(command, sudo_password):
-    master, slave = pty.openpty()
-    proc = subprocess.Popen(
-        ["sudo", "-S"] + command.split(),
-        stdin=subprocess.PIPE,
-        stdout=subprocess.PIPE,
-        stderr=subprocess.PIPE,
-        universal_newlines=True
-    )
-
-    # Send sudo password
-    sudo_prompt = proc.communicate(f"{sudo_password}\n")[1]
-    if "Sorry" in sudo_prompt:  # If "Sorry" in sudo prompt, password was incorrect
-        print("Incorrect sudo password. Exiting.")
-        sys.exit(1)
-
-    # Read output
-    stdout, stderr = proc.communicate()
-    print(stdout)
-    print(stderr)
-
 # Function to update Pacman packages
 def update_pacman(sudo_password):
     print("Updating Pacman packages...")
     print("-------------------------------------")
-    command = "pacman -Syu --noconfirm"
-    execute_command_with_sudo(command, sudo_password)
+    command = f"echo {sudo_password} | sudo -S pacman -Syu --noconfirm"
+    os.system(command)
 
 # Function to update AUR packages with Yay
 def update_yay(sudo_password):
     print("Updating AUR packages with Yay...")
     print("-------------------------------------")
-    command = "yay -Syu --noconfirm"
-    execute_command_with_sudo(command, sudo_password)
+    command = f"echo {sudo_password} | yay -Syu --noconfirm"
+    os.system(command)
 
 # Function to update packages with Homebrew
 def update_brew():
@@ -60,6 +36,13 @@ def update_brew():
     print("-------------------------------------")
     command = "brew update && brew upgrade"
     os.system(command)
+
+# Function to execute a command with or without sudo as needed
+def execute_command_with_sudo(command, sudo_password):
+    if command.startswith("sudo"):
+        os.system(f'echo "{sudo_password}" | {command}')
+    else:
+        os.system(command)
 
 # Function to check the version of a package in a specific package manager
 def check_package_version(package, package_manager):
