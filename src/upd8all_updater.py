@@ -45,6 +45,7 @@ def update_pacman():
     command = "pacman -Syu --noconfirm"
     execute_command_with_sudo(command, sudo_password)
 
+# Function to update AUR packages with Yay
 def update_yay(sudo_password):
     print("\nUpdating AUR packages with Yay...")
     print("-------------------------------------")
@@ -55,6 +56,8 @@ def update_yay(sudo_password):
         json.dump({"misc": {"save": True}}, f)
     command = "yay -Syu --noconfirm"
     execute_command_with_sudo(command, sudo_password)
+
+
 
 # Function to update packages with Homebrew
 def update_brew():
