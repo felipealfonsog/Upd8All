@@ -97,6 +97,8 @@ def check_package_version(package, package_manager):
     print(f"Checking version of {package} using {package_manager}...")
     os.system(command)
 
+timeout_expired = False
+
 # Function executed in a separate thread to show a warning message if no package name is entered within 1 minute
 def timeout_warning():
     print("\nTime's up. Program execution has ended.\n")
@@ -146,6 +148,8 @@ def main():
     # Inform the user about program termination after 1 minute of inactivity
     print("\nNote: If no further input is provided within 1 minute, the program will terminate.\n")
 
+
+    
     # Request package name and package manager to check its version
     print("Select the package manager to check the version:")
     print("1. Pacman")
@@ -169,14 +173,15 @@ def main():
         package_manager = "yay"
     elif selected_option == '3' and has_brew:
         package_manager = "brew"
-    elif  timeout_warning() == True:
-        sys.stdout.flush()  # Flush the output buffer
-        sys.exit(0)
-    else:
+    elif selected_option == "":
         print("\nInvalid option (Or, you didn't choose any option above). Exiting the program.\n")
         sys.stdout.flush()  # Flush the output buffer
         sys.exit(1)
+    elif timeout_expired:
+        print("\nExiting the program due to timeout.\n")
+        sys.exit(0)
 
+        
     # Cancel timer if the user provides a package name
     timer_thread.cancel()
 
