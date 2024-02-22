@@ -20,42 +20,47 @@ License: BSD 3-Clause (Restrictive)
 
 # Function to execute a command with sudo as needed
 def execute_command_with_sudo(command, sudo_password):
-    master, slave = pty.openpty()
-    proc = subprocess.Popen(
-        command,
-        shell=True,
-        stdin=subprocess.PIPE,
-        stdout=slave,
-        stderr=slave,
-        close_fds=True
-    )
+    if command.startswith("sudo"):
+        master, slave = pty.openpty()
+        proc = subprocess.Popen(
+            command,
+            shell=True,
+            stdin=subprocess.PIPE,
+            stdout=slave,
+            stderr=slave,
+            close_fds=True
+        )
 
-    # Send sudo password if requested
-    while True:
-        r, _, _ = select.select([slave], [], [])
-        if r:
-            output = os.read(slave, 1024).decode().strip()
-            if "password" in output.lower():
-                os.write(master, (sudo_password + "\n").encode())
-            elif not output:
-                break
-            print(output)
+        # Send sudo password
+        os.write(master, (sudo_password + "\n").encode())
+        os.close(master)
 
-    proc.wait()
+        # Read output
+        while True:
+            r, _, _ = select.select([slave], [], [])
+            if r:
+                output = os.read(slave, 1024).decode().strip()
+                if not output:
+                    break
+                print(output)
+
+        proc.wait()
+    else:
+        os.system(command)
 
 # Function to update Pacman packages
 def update_pacman(sudo_password):
     print("Updating Pacman packages...")
     print("-------------------------------------")
-    command = "sudo pacman -Syu --noconfirm"
+    command = f"echo {sudo_password} | sudo -S pacman -Syu --noconfirm"
     execute_command_with_sudo(command, sudo_password)
 
 # Function to update AUR packages with Yay
-def update_yay():
+def update_yay(sudo_password):
     print("Updating AUR packages with Yay...")
     print("-------------------------------------")
-    command = "yay -Syu --noconfirm --sudoloop"
-    os.system(command)
+    command = "yay -Syu --noconfirm"
+    execute_command_with_sudo(command, sudo_password)
 
 # Function to update packages with Homebrew
 def update_brew():
@@ -81,7 +86,7 @@ def check_package_version(package, package_manager):
 
 # Function executed in a separate thread to show a warning message if no package name is entered within 1 minute
 def timeout_warning():
-    print("\nTime's up. Program execution has ended.")
+    print("\nTime's up. Program execution has ended.\n")
     sys.exit(0)
 
 def main():
@@ -106,23 +111,25 @@ def main():
     sudo_password = getpass.getpass(prompt="Enter your sudo password: ")
     print()  # Add a newline after entering the password
 
-    # Update Pacman packages
+    # Update packages
     update_pacman(sudo_password)
 
-    # Update AUR packages with Yay
     if has_yay:
-        update_yay()
+        update_yay(sudo_password)
+    else:
+        print("You do not have Yay installed.")
 
-    # Update packages with Homebrew
     if has_brew:
         update_brew()
+    else:
+        print("You do not have Brew installed.")
 
     # Start timing thread
     timer_thread = threading.Timer(60, timeout_warning)
     timer_thread.start()
 
     # Request package name and package manager to check its version
-    print("\nSelect the package manager to check the version:")
+    print("Select the package manager to check the version:")
     print("1. Pacman")
     if has_yay:
         print("2. Yay")
@@ -133,7 +140,7 @@ def main():
 
     # Check if the user wants to quit
     if selected_option == 'q':
-        print("\nExiting the program.")
+        print("\nExiting the program.\n")
         timer_thread.cancel()  # Cancel the timer immediately
         sys.exit(0)
 
@@ -145,14 +152,14 @@ def main():
     elif selected_option == '3' and has_brew:
         package_manager = "brew"
     else:
-        print("\nInvalid option. Exiting the program.")
+        print("\nInvalid option. Exiting the program.\n")
         sys.exit(1)
 
     # Cancel timer if the user provides a package name
     timer_thread.cancel()
 
     # Request package name
-    package = input("\nEnter the name of the package to check its version (e.g., gh): ").strip().lower()
+    package = input("Enter the name of the package to check its version (e.g., gh): ").strip().lower()
 
     # Check the version of the specified package
     check_package_version(package, package_manager)
