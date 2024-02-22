@@ -146,9 +146,8 @@ def main():
     # Inform the user about program termination after 1 minute of inactivity
     print("\nNote: If no further input is provided within 1 minute, the program will terminate.\n")
 
-
+    # Request package name and package manager to check its version
     while True:
-        # Request package name and package manager to check its version
         print("Select the package manager to check the version:")
         print("1. Pacman")
         if has_yay:
@@ -173,9 +172,9 @@ def main():
             package_manager = "brew"
         else:
             print("\nInvalid option. Please enter a valid option number or 'q' to quit.\n")
-            continue
+            continue  # Repeat the loop to ask for a valid option
 
-        # Cancel timer if the user provides a package name
+        # Cancel timer if the user provides a package manager
         timer_thread.cancel()
 
         # Request package name
