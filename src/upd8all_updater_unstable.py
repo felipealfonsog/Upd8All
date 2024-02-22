@@ -74,7 +74,6 @@ def update_brew():
     print("\nUpdating packages with Homebrew...")
     print("-------------------------------------")
     command = "brew update && brew upgrade"
-
     os.system(command)
     print("\n-----------------------------------\n")
     
@@ -96,7 +95,6 @@ def check_package_version(package, package_manager):
 # Function executed in a separate thread to show a warning message if no package name is entered within 1 minute
 def timeout_warning():
     print("\nTime's up. Program execution has ended.\n")
-    sys.stdout.flush()  # Flush the output buffer
     sys.exit(0)
 
 
@@ -168,7 +166,6 @@ def main():
         package_manager = "brew"
     else:
         print("\nInvalid option (Or, you didn't choose any option above). Exiting the program.\n")
-        sys.stdout.flush()  # Flush the output buffer
         sys.exit(1)
 
     # Cancel timer if the user provides a package name
