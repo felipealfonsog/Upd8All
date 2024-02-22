@@ -148,6 +148,7 @@ def main():
 
 # Request package name and package manager to check its version
     while True:
+        
         print("Select the package manager to check the version:")
         print("1. Pacman")
         if has_yay:
@@ -174,10 +175,12 @@ def main():
             print("\nInvalid option. Please enter a valid option number or 'q' to quit.\n")
             continue  # Repeat the loop to ask for a valid option
 
-        if selected_option.isdigit() or selected_option == 'q':
+        # Cancel the timer if the user provides a valid option or chooses to quit
+        if selected_option.isdigit() and 1 <= int(selected_option) <= 3 or selected_option == 'q':
             timer_thread.cancel()
         else:
-            # Reiniciar el temporizador si el usuario no proporciona una opción válida
+            # Restart the timer if the user does not provide a valid option
+            timer_thread.cancel()
             timer_thread = threading.Timer(60, timeout_warning)
             timer_thread.start()
 
