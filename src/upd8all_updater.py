@@ -4,7 +4,6 @@ import threading
 import getpass
 import subprocess
 import select
-import pty
 import json
 
 # Function to print the welcome message
@@ -20,7 +19,7 @@ License: BSD 3-Clause (Restrictive)
 """)
 
 # Function to execute a command with sudo as needed
-def execute_command_with_sudo(command):
+def execute_command_with_sudo(command, sudo_password):
     proc = subprocess.Popen(
         ["sudo", "-S", *command.split()],
         stdin=subprocess.PIPE,
@@ -30,7 +29,11 @@ def execute_command_with_sudo(command):
     )
 
     # Send sudo password
-    stdout, stderr = proc.communicate(input=sudo_password + '\n')
+    proc.stdin.write(sudo_password + '\n')
+    proc.stdin.flush()
+
+    # Wait for the process to complete
+    proc.communicate()
     if proc.returncode != 0:
         print(f"Error executing command with sudo: {command}")
         sys.exit(1)
@@ -40,7 +43,7 @@ def update_pacman():
     print("\nUpdating Pacman packages...")
     print("-------------------------------------")
     command = "pacman -Syu --noconfirm"
-    execute_command_with_sudo(command)
+    execute_command_with_sudo(command, sudo_password)
 
 # Function to update AUR packages with Yay
 def update_yay():
