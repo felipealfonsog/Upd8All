@@ -29,7 +29,8 @@ def execute_command_with_sudo(command, sudo_password):
         stdin=subprocess.PIPE,
         stdout=sys.stdout,
         stderr=sys.stderr,
-        universal_newlines=True
+        universal_newlines=True,
+        env=env  # Pass the modified environment to the subprocess
     )
 
     # Send sudo password
@@ -41,6 +42,7 @@ def execute_command_with_sudo(command, sudo_password):
     if proc.returncode != 0:
         print(f"Error executing command with sudo: {command}")
         sys.exit(1)
+
 
 # Function to update Pacman packages
 def update_pacman(sudo_password):
