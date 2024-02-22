@@ -171,7 +171,7 @@ def main():
         package_manager = "brew"
     elif  timeout_warning() == True:
         sys.stdout.flush()  # Flush the output buffer
-        sys.exit(1)
+        sys.exit(0)
     else:
         print("\nInvalid option (Or, you didn't choose any option above). Exiting the program.\n")
         sys.stdout.flush()  # Flush the output buffer
