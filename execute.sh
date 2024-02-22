@@ -46,8 +46,30 @@ echo "Description:  is a multi-platform package updater tool that streamlines th
 echo "Creator: Felipe Alfonso Gonzalez - github.com/felipealfonsog - f.alfonso@res-ear.ch"
 echo "License: BSD v3 (Restrictive)"
 echo "***************************************************************************"
+echo ""
 
 PYTHON_SCRIPT="./src/upd8all_updater.py"
+
+# check if any python installed or not
+
+wherepython () {
+	if ! command -v "python" > /dev/null ; then
+	echo "Sorry, it looks like Python isn't installed."
+	echo "please check Python installed / working perfectly"
+	sleep 2
+	exit 0
+else 
+ 
+	echo "Possible python locations"
+	echo ""
+	whereis python
+	echo ""
+fi
+}
+
+# main works
+
+wherepython
 
 # Check if Python script exists
 if [ ! -f "$PYTHON_SCRIPT" ]; then
