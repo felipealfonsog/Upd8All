@@ -177,6 +177,8 @@ def main():
         if selected_option.isdigit() or selected_option == 'q':
             timer_thread.cancel()
         else:
+            # Reiniciar el temporizador si el usuario no proporciona una opción válida
+            timer_thread = threading.Timer(60, timeout_warning)
             timer_thread.start()
 
 
