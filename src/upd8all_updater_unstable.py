@@ -24,17 +24,13 @@ Developed with love from Chile.
 
 # Function to execute a command with sudo as needed
 def execute_command_with_sudo(command, sudo_password):
-    # Set environment variable to prevent sudo from asking for password
-    env = os.environ.copy()
-    env['SUDO_ASKPASS'] = '/bin/false'
-    
     proc = subprocess.Popen(
         ["sudo", "-S", *command.split()],
         stdin=subprocess.PIPE,
         stdout=sys.stdout,
         stderr=sys.stderr,
         universal_newlines=True,
-        env=env  # Pass the modified environment to the subprocess
+        env={'SUDO_ASKPASS': '/bin/false'}  # Set environment variable to prevent sudo from asking for password
     )
 
     # Send sudo password
@@ -46,6 +42,7 @@ def execute_command_with_sudo(command, sudo_password):
     if proc.returncode != 0:
         print(f"Error executing command with sudo: {command}")
         sys.exit(1)
+
 
 # Function to update Pacman packages
 def update_pacman(sudo_password):
