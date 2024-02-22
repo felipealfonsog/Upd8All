@@ -27,23 +27,28 @@ def execute_command_with_sudo(command, sudo_password):
             command,
             shell=True,
             stdin=subprocess.PIPE,
-            stdout=subprocess.PIPE,
-            stderr=subprocess.PIPE,
-            universal_newlines=True
+            stdout=slave,
+            stderr=slave,
+            close_fds=True
         )
 
         # Send sudo password
-        sudo_prompt = proc.communicate(f"{sudo_password}\n")[1]
-        if "Sorry" in sudo_prompt:  # If "Sorry" in sudo prompt, password was incorrect
-            print("Incorrect sudo password. Exiting.")
-            sys.exit(1)
+        os.write(master, (sudo_password + "\n").encode())
+        os.close(master)
 
         # Read output
-        stdout, stderr = proc.communicate()
-        print(stdout)
-        print(stderr)
+        while True:
+            r, _, _ = select.select([slave], [], [])
+            if r:
+                output = os.read(slave, 1024).decode().strip()
+                if not output:
+                    break
+                print(output)
+
+        proc.wait()
     else:
         os.system(command)
+
 
 # Function to update Pacman packages
 def update_pacman(sudo_password):
@@ -134,6 +139,9 @@ def main():
     timer_thread = threading.Timer(60, timeout_warning)
     timer_thread.start()
 
+    # Inform the user about program termination after 1 minute of inactivity
+    print("\nNote: If no further input is provided within 1 minute, the program will terminate.\n")
+
     # Request package name and package manager to check its version
     print("Select the package manager to check the version:")
     print("1. Pacman")
@@ -143,6 +151,7 @@ def main():
         print("3. Brew")
 
     selected_option = input("Enter the option number (e.g., 1) or 'q' to quit: ").strip().lower()
+
 
     # Check if the user wants to quit
     if selected_option == 'q':
