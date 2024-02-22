@@ -72,6 +72,8 @@ def update_yay(sudo_password):
         # Ejecutar el comando Yay directamente sin sudo
         os.system(command)
 
+
+
 # Function to update packages with Homebrew
 def update_brew():
     print("\nUpdating packages with Homebrew...")
@@ -102,6 +104,8 @@ def timeout_warning():
     sys.exit(0)
 
 def main():
+    global has_yay, has_brew
+
     # Print welcome message
     print_welcome_message()
 
@@ -120,6 +124,7 @@ def main():
         has_brew = False
 
     # Request sudo password at the start of the program
+    global sudo_password
     sudo_password = getpass.getpass(prompt="Enter your sudo password: ")
     print()  # Add a newline after entering the password
 
@@ -144,47 +149,49 @@ def main():
     print("\nNote: If no further input is provided within 1 minute, the program will terminate.\n")
 
     # Request package name and package manager to check its version
-    print("Select the package manager to check the version:")
-    print("1. Pacman")
-    if has_yay:
-        print("2. Yay")
-    if has_brew:
-        print("3. Brew")
+    while True:
+        print("Select the package manager to check the version:")
+        print("1. Pacman")
+        if has_yay:
+            print("2. Yay")
+        if has_brew:
+            print("3. Brew")
 
-    selected_option = input("Enter the option number (e.g., 1) or 'q' to quit: ").strip().lower()
+        selected_option = input("Enter the option number (e.g., 1) or 'q' to quit: ").strip().lower()
 
-    # Check if the user wants to quit
-    if selected_option == 'q':
-        print("\nExiting the program.\n")
-        timer_thread.cancel()  # Cancel the timer immediately
-        sys.exit(0)
+        # Check if the user wants to quit
+        if selected_option == 'q':
+            print("\nExiting the program.\n")
+            timer_thread.cancel()  # Cancel the timer immediately
+            sys.exit(0)
 
-    package_manager = ""
-    if selected_option == '1':
-        package_manager = "pacman"
-    elif selected_option == '2' and has_yay:
-        package_manager = "yay"
-    elif selected_option == '3' and has_brew:
-        package_manager = "brew"
-    else:
-        print("\nInvalid option (Or, you didn't choose any option above). Exiting the program.\n")
-        sys.stdout.flush()  # Flush the output buffer
-        sys.exit(1)
+        package_manager = ""
+        if selected_option == '1':
+            package_manager = "pacman"
+        elif selected_option == '2' and has_yay:
+            package_manager = "yay"
+        elif selected_option == '3' and has_brew:
+            package_manager = "brew"
+        else:
+            print("\nInvalid option. Please enter a valid option number or 'q' to quit.\n")
+            continue  # Repeat the loop to ask for a valid option
 
-    # Cancel timer if the user provides a package name
-    timer_thread.cancel()
+        # Check if the option is valid and restart the timer if necessary
+        if selected_option.isdigit() and 1 <= int(selected_option) <= 3:
+            timer_thread.cancel()
+        else:
+            # Restart the timer if the option is invalid
+            timer_thread.cancel()
+            timer_thread = threading.Timer(60, timeout_warning)
+            timer_thread.start()
 
-    # Request package name
-    package = input("Enter the name of the package to check its version (e.g., gh): ").strip().lower()
+        # Request package name
+        package = input("Enter the name of the package to check its version (e.g., gh): ").strip().lower()
 
-    # Check if the user entered a valid package name
-    if not package:
-        print("\nNo package name provided. Exiting the program.\n")
-        sys.stdout.flush()  # Flush the output buffer
-        sys.exit(0)
+        # Check the version of the specified package
+        check_package_version(package, package_manager)
+        break
 
-    # Check the version of the specified package
-    check_package_version(package, package_manager)
 
 if __name__ == "__main__":
     main()
