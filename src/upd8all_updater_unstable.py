@@ -9,13 +9,12 @@ import json
 # Function to print the welcome message
 def print_welcome_message():
     print("""
-Welcome to the Upd8All Updater ⚙
+Welcome to the Upd8All Updater
 =======================================
 Description: Upd8All is a versatile and comprehensive package update tool meticulously 
 crafted to cater to the needs of Arch Linux users.
 Creator: Felipe Alfonso Gonzalez - github.com/felipealfonsog - f.alfonso@res-ear.ch
 License: BSD 3-Clause (Restrictive)
-Developed with love from Chile.
 ***************************************************************************
 """)
 
@@ -24,14 +23,13 @@ def execute_command_with_sudo(command, sudo_password):
     # Set environment variable to prevent sudo from asking for password
     env = os.environ.copy()
     env['SUDO_ASKPASS'] = '/bin/false'
-
+    
     proc = subprocess.Popen(
-        ["sudo", "-A", *command.split()],
+        ["sudo", "-S", *command.split()],
         stdin=subprocess.PIPE,
         stdout=sys.stdout,
         stderr=sys.stderr,
-        universal_newlines=True,
-        env=env
+        universal_newlines=True
     )
 
     # Send sudo password
@@ -64,7 +62,7 @@ def update_yay(sudo_password):
   
     command = "yay -Syu --noconfirm"
     
-    # Check if sudo is required for the Yay command
+    # Verificar si se necesita sudo para el comando Yay
     need_sudo = False
     try:
         subprocess.run(command.split(), stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL, check=True)
@@ -72,11 +70,13 @@ def update_yay(sudo_password):
         need_sudo = True
     
     if need_sudo:
-        # Execute Yay command with sudo if necessary
+        # Ejecutar el comando Yay con sudo si es necesario
         execute_command_with_sudo(command, sudo_password)
     else:
-        # Execute Yay command directly without sudo
+        # Ejecutar el comando Yay directamente sin sudo
         os.system(command)
+
+
 
 # Function to update packages with Homebrew
 def update_brew():
@@ -108,8 +108,6 @@ def timeout_warning():
     sys.exit(0)
 
 def main():
-    global has_yay, has_brew
-
     # Print welcome message
     print_welcome_message()
 
@@ -128,6 +126,7 @@ def main():
         has_brew = False
 
     # Request sudo password at the start of the program
+    global sudo_password
     sudo_password = getpass.getpass(prompt="Enter your sudo password: ")
     print()  # Add a newline after entering the password
 
@@ -152,49 +151,41 @@ def main():
     print("\nNote: If no further input is provided within 1 minute, the program will terminate.\n")
 
     # Request package name and package manager to check its version
-    while True:
-        print("Select the package manager to check the version:")
-        print("1. Pacman")
-        if has_yay:
-            print("2. Yay")
-        if has_brew:
-            print("3. Brew")
+    print("Select the package manager to check the version:")
+    print("1. Pacman")
+    if has_yay:
+        print("2. Yay")
+    if has_brew:
+        print("3. Brew")
 
-        selected_option = input("Enter the option number (e.g., 1) or 'q' to quit: ").strip().lower()
+    selected_option = input("Enter the option number (e.g., 1) or 'q' to quit: ").strip().lower()
 
-        # Check if the user wants to quit
-        if selected_option == 'q':
-            print("\nExiting the program.\n")
-            timer_thread.cancel()  # Cancel the timer immediately
-            sys.exit(0)
+    # Check if the user wants to quit
+    if selected_option == 'q':
+        print("\nExiting the program.\n")
+        timer_thread.cancel()  # Cancel the timer immediately
+        sys.exit(0)
 
-        package_manager = ""
-        if selected_option == '1':
-            package_manager = "pacman"
-        elif selected_option == '2' and has_yay:
-            package_manager = "yay"
-        elif selected_option == '3' and has_brew:
-            package_manager = "brew"
-        else:
-            print("\nInvalid option. Please enter a valid option number or 'q' to quit.\n")
-            continue  # Repeat the loop to ask for a valid option
-
-        # Cancel timer if the option is valid
-        timer_thread.cancel()
-
-        # Request package name
-        package = input("Enter the name of the package to check its version (e.g., gh): ").strip().lower()
-
-        # Check if the user entered a package name
-        if not package:
-            print("\nNo package name provided. Exiting the program.\n")
-            sys.stdout.flush()  # Flush the output buffer
-            sys.exit(0)
-
-        # Check the version of the specified package
-        check_package_version(package, package_manager)
+    package_manager = ""
+    if selected_option == '1':
+        package_manager = "pacman"
+    elif selected_option == '2' and has_yay:
+        package_manager = "yay"
+    elif selected_option == '3' and has_brew:
+        package_manager = "brew"
+    else:
+        print("\nInvalid option (Or, you didn't choose any option above). Exiting the program.\n")
         sys.stdout.flush()  # Flush the output buffer
-        sys.exit(0)  # Exit the program after checking the package version
+        sys.exit(1)
+
+    # Cancel timer if the user provides a package name
+    timer_thread.cancel()
+
+    # Request package name
+    package = input("Enter the name of the package to check its version (e.g., gh): ").strip().lower()
+
+    # Check the version of the specified package
+    check_package_version(package, package_manager)
 
 if __name__ == "__main__":
     main()
