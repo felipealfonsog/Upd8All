@@ -9,12 +9,13 @@ import json
 # Function to print the welcome message
 def print_welcome_message():
     print("""
-Welcome to the Upd8All Updater
+Welcome to the Upd8All Updater ⚙
 =======================================
 Description: Upd8All is a versatile and comprehensive package update tool meticulously 
 crafted to cater to the needs of Arch Linux users.
 Creator: Felipe Alfonso Gonzalez - github.com/felipealfonsog - f.alfonso@res-ear.ch
 License: BSD 3-Clause (Restrictive)
+Developed with ❤️ from Chile.
 ***************************************************************************
 """)
 
