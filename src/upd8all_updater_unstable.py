@@ -20,12 +20,17 @@ License: BSD 3-Clause (Restrictive)
 
 # Function to execute a command with sudo as needed
 def execute_command_with_sudo(command, sudo_password):
+    # Set environment variable to prevent sudo from asking for password
+    env = os.environ.copy()
+    env['SUDO_ASKPASS'] = '/bin/false'
+
     proc = subprocess.Popen(
-        ["sudo", "-S", *command.split()],
+        ["sudo", "-A", *command.split()],
         stdin=subprocess.PIPE,
-        stdout=subprocess.PIPE,  # Pipe stdout to avoid printing sudo password prompt
+        stdout=sys.stdout,
         stderr=sys.stderr,
-        universal_newlines=True
+        universal_newlines=True,
+        env=env
     )
 
     # Send sudo password
