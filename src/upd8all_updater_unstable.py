@@ -3,6 +3,7 @@ import sys
 import threading
 import getpass
 import subprocess
+import select
 import json
 
 # Function to print the welcome message
@@ -96,7 +97,6 @@ def check_package_version(package, package_manager):
     print(f"Checking version of {package} using {package_manager}...")
     os.system(command)
 
-
 # Function executed in a separate thread to show a warning message if no package name is entered within 1 minute
 def timeout_warning():
     print("\nTime's up. Program execution has ended.\n")
@@ -146,7 +146,7 @@ def main():
     # Inform the user about program termination after 1 minute of inactivity
     print("\nNote: If no further input is provided within 1 minute, the program will terminate.\n")
 
-    # Request package name and package manager to check its version
+# Request package name and package manager to check its version
     while True:
         print("Select the package manager to check the version:")
         print("1. Pacman")
@@ -186,6 +186,7 @@ def main():
         # Check the version of the specified package
         check_package_version(package, package_manager)
         break
+
 
 if __name__ == "__main__":
     main()
