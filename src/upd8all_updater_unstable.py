@@ -187,10 +187,12 @@ def main():
         # Check if the user entered a package name
         if not package:
             print("\nNo package name provided. Exiting the program.\n")
+            sys.stdout.flush()  # Flush the output buffer
             sys.exit(0)
 
         # Check the version of the specified package
         check_package_version(package, package_manager)
+        sys.stdout.flush()  # Flush the output buffer
         sys.exit(0)  # Exit the program after checking the package version
 
 if __name__ == "__main__":
