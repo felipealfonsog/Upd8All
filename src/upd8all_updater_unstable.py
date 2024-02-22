@@ -15,7 +15,7 @@ Description: Upd8All is a versatile and comprehensive package update tool meticu
 crafted to cater to the needs of Arch Linux users.
 Creator: Felipe Alfonso Gonzalez - github.com/felipealfonsog - f.alfonso@res-ear.ch
 License: BSD 3-Clause (Restrictive)
-Developed with ❤️ from Chile.
+Developed with love from Chile.
 ***************************************************************************
 """)
 
