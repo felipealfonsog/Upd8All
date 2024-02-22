@@ -59,6 +59,13 @@ def update_pacman(sudo_password):
 def update_yay(sudo_password):
     print("Updating AUR packages with Yay...")
     print("-------------------------------------")
+    # Add configuration to avoid yay warning
+    config_path = os.path.expanduser("~/.config/yay/")
+    os.makedirs(config_path, exist_ok=True)
+    config_file = os.path.join(config_path, "config.json")
+    with open(config_file, "w") as f:
+        f.write('{"misc": {"save": true}}')
+    # Update yay
     command = "yay -Syu --noconfirm"
     execute_command_with_sudo(command, sudo_password)
 
