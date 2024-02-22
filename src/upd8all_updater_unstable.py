@@ -5,6 +5,7 @@ import getpass
 import subprocess
 import select
 import pty
+import json
 
 # Function to print the welcome message
 def print_welcome_message():
@@ -26,25 +27,21 @@ def execute_command_with_sudo(command, sudo_password):
             command,
             shell=True,
             stdin=subprocess.PIPE,
-            stdout=slave,
-            stderr=slave,
-            close_fds=True
+            stdout=subprocess.PIPE,
+            stderr=subprocess.PIPE,
+            universal_newlines=True
         )
 
         # Send sudo password
-        os.write(master, (sudo_password + "\n").encode())
-        os.close(master)
+        sudo_prompt = proc.communicate(f"{sudo_password}\n")[1]
+        if "Sorry" in sudo_prompt:  # If "Sorry" in sudo prompt, password was incorrect
+            print("Incorrect sudo password. Exiting.")
+            sys.exit(1)
 
         # Read output
-        while True:
-            r, _, _ = select.select([slave], [], [])
-            if r:
-                output = os.read(slave, 1024).decode().strip()
-                if not output:
-                    break
-                print(output)
-
-        proc.wait()
+        stdout, stderr = proc.communicate()
+        print(stdout)
+        print(stderr)
     else:
         os.system(command)
 
@@ -52,20 +49,18 @@ def execute_command_with_sudo(command, sudo_password):
 def update_pacman(sudo_password):
     print("Updating Pacman packages...")
     print("-------------------------------------")
-    command = f"echo {sudo_password} | sudo -S pacman -Syu --noconfirm"
+    command = "sudo pacman -Syu --noconfirm"
     execute_command_with_sudo(command, sudo_password)
 
 # Function to update AUR packages with Yay
 def update_yay(sudo_password):
     print("Updating AUR packages with Yay...")
     print("-------------------------------------")
-    # Add configuration to avoid yay warning
     config_path = os.path.expanduser("~/.config/yay/")
     os.makedirs(config_path, exist_ok=True)
     config_file = os.path.join(config_path, "config.json")
     with open(config_file, "w") as f:
-        f.write('{"misc": {"save": true}}')
-    # Update yay
+        json.dump({"misc": {"save": True}}, f)
     command = "yay -Syu --noconfirm"
     execute_command_with_sudo(command, sudo_password)
 
