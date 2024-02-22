@@ -39,14 +39,15 @@ def execute_command_with_sudo(command, sudo_password):
         sys.exit(1)
 
 # Function to update Pacman packages
-def update_pacman():
+def update_pacman(sudo_password):
     print("\nUpdating Pacman packages...")
     print("-------------------------------------")
     command = "pacman -Syu --noconfirm"
     execute_command_with_sudo(command, sudo_password)
 
+
 # Function to update AUR packages with Yay
-def update_yay():
+def update_yay(sudo_password):
     print("\nUpdating AUR packages with Yay...")
     print("-------------------------------------")
     config_path = os.path.expanduser("~/.config/yay/")
