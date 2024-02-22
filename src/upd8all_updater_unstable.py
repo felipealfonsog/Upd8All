@@ -6,10 +6,6 @@ import subprocess
 import select
 import json
 
-# Variables globales para verificar si el usuario tiene Yay y Brew instalados
-has_yay = False
-has_brew = False
-
 # Function to print the welcome message
 def print_welcome_message():
     print("""
@@ -195,6 +191,7 @@ def main():
         # Check the version of the specified package
         check_package_version(package, package_manager)
         break
+
 
 if __name__ == "__main__":
     main()
