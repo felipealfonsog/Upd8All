@@ -54,7 +54,7 @@ def update_pacman(sudo_password):
 def update_yay():
     print("Updating AUR packages with Yay...")
     print("-------------------------------------")
-    command = "yay -Syu --noconfirm"
+    command = "yay -Syu --noconfirm --sudoloop"
     os.system(command)
 
 # Function to update packages with Homebrew
