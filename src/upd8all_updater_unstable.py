@@ -72,8 +72,6 @@ def update_yay(sudo_password):
         # Ejecutar el comando Yay directamente sin sudo
         os.system(command)
 
-
-
 # Function to update packages with Homebrew
 def update_brew():
     print("\nUpdating packages with Homebrew...")
@@ -176,22 +174,20 @@ def main():
             print("\nInvalid option. Please enter a valid option number or 'q' to quit.\n")
             continue  # Repeat the loop to ask for a valid option
 
-        # Check if the option is valid and restart the timer if necessary
-        if selected_option.isdigit() and 1 <= int(selected_option) <= 3:
-            timer_thread.cancel()
-        else:
-            # Restart the timer if the option is invalid
-            timer_thread.cancel()
-            timer_thread = threading.Timer(60, timeout_warning)
-            timer_thread.start()
+        # Cancel timer if the option is valid
+        timer_thread.cancel()
 
         # Request package name
         package = input("Enter the name of the package to check its version (e.g., gh): ").strip().lower()
 
+        # Check if the user entered a package name
+        if not package:
+            print("\nNo package name provided. Exiting the program.\n")
+            sys.exit(0)
+
         # Check the version of the specified package
         check_package_version(package, package_manager)
-        break
-
+        sys.exit(0)  # Exit the program after checking the package version
 
 if __name__ == "__main__":
     main()
