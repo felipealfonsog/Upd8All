@@ -5,6 +5,7 @@ import getpass
 import subprocess
 import select
 import pty
+import json
 
 # Function to print the welcome message
 def print_welcome_message():
@@ -20,47 +21,58 @@ License: BSD 3-Clause (Restrictive)
 
 # Function to execute a command with sudo as needed
 def execute_command_with_sudo(command, sudo_password):
-    master, slave = pty.openpty()
-    proc = subprocess.Popen(
-        ["sudo", "-S"] + command.split(),
-        stdin=subprocess.PIPE,
-        stdout=subprocess.PIPE,
-        stderr=subprocess.PIPE,
-        universal_newlines=True
-    )
+    if command.startswith("sudo"):
+        master, slave = pty.openpty()
+        proc = subprocess.Popen(
+            command,
+            shell=True,
+            stdin=subprocess.PIPE,
+            stdout=subprocess.PIPE,
+            stderr=subprocess.PIPE,
+            universal_newlines=True
+        )
 
-    # Send sudo password
-    sudo_prompt = proc.communicate(f"{sudo_password}\n")[1]
-    if "Sorry" in sudo_prompt:  # If "Sorry" in sudo prompt, password was incorrect
-        print("Incorrect sudo password. Exiting.")
-        sys.exit(1)
+        # Send sudo password
+        sudo_prompt = proc.communicate(f"{sudo_password}\n")[1]
+        if "Sorry" in sudo_prompt:  # If "Sorry" in sudo prompt, password was incorrect
+            print("Incorrect sudo password. Exiting.")
+            sys.exit(1)
 
-    # Read output
-    stdout, stderr = proc.communicate()
-    print(stdout)
-    print(stderr)
+        # Read output
+        stdout, stderr = proc.communicate()
+        print(stdout)
+        print(stderr)
+    else:
+        os.system(command)
 
 # Function to update Pacman packages
 def update_pacman(sudo_password):
     print("Updating Pacman packages...")
     print("-------------------------------------")
-    command = "pacman -Syu --noconfirm"
+    command = "sudo pacman -Syu --noconfirm"
     execute_command_with_sudo(command, sudo_password)
 
 # Function to update AUR packages with Yay
 def update_yay(sudo_password):
     print("Updating AUR packages with Yay...")
     print("-------------------------------------")
+    config_path = os.path.expanduser("~/.config/yay/")
+    os.makedirs(config_path, exist_ok=True)
+    config_file = os.path.join(config_path, "config.json")
+    with open(config_file, "w") as f:
+        json.dump({"misc": {"save": True}}, f)
     command = "yay -Syu --noconfirm"
     execute_command_with_sudo(command, sudo_password)
 
 # Function to update packages with Homebrew
 def update_brew():
-    print("Updating packages with Homebrew...")
+    print("\nUpdating packages with Homebrew...")
     print("-------------------------------------")
     command = "brew update && brew upgrade"
-    os.system(command)
 
+    os.system(command)
+    print("\n-----------------------------------\n")
+    
 # Function to check the version of a package in a specific package manager
 def check_package_version(package, package_manager):
     if package_manager == "pacman":
@@ -78,8 +90,10 @@ def check_package_version(package, package_manager):
 
 # Function executed in a separate thread to show a warning message if no package name is entered within 1 minute
 def timeout_warning():
-    print("Time's up. Program execution has ended.")
+    print("\nTime's up. Program execution has ended.\n")
+    sys.stdout.flush()  # Limpiar el buffer de salida
     sys.exit(0)
+
 
 def main():
     # Print welcome message
@@ -132,7 +146,7 @@ def main():
 
     # Check if the user wants to quit
     if selected_option == 'q':
-        print("Exiting the program.")
+        print("\nExiting the program.\n")
         timer_thread.cancel()  # Cancel the timer immediately
         sys.exit(0)
 
@@ -144,7 +158,7 @@ def main():
     elif selected_option == '3' and has_brew:
         package_manager = "brew"
     else:
-        print("Invalid option. Exiting the program.")
+        print("\nInvalid option (Or, you didn't choose any option above). Exiting the program.\n")
         sys.exit(1)
 
     # Cancel timer if the user provides a package name
