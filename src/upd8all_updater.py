@@ -54,8 +54,10 @@ def update_yay():
     config_file = os.path.join(config_path, "config.json")
     with open(config_file, "w") as f:
         json.dump({"misc": {"save": True}}, f)
+  
     command = "yay -Syu --noconfirm"
-    os.system(command)
+    execute_command_with_sudo(command)
+
 
 # Function to update packages with Homebrew
 def update_brew():
