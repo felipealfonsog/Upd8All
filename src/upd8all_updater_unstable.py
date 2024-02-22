@@ -54,10 +54,9 @@ def update_yay():
     config_file = os.path.join(config_path, "config.json")
     with open(config_file, "w") as f:
         json.dump({"misc": {"save": True}}, f)
-  
     command = "yay -Syu --noconfirm"
-    execute_command_with_sudo(command)
-
+    
+    execute_command_with_sudo(command, sudo_password)
 
 # Function to update packages with Homebrew
 def update_brew():
@@ -112,10 +111,10 @@ def main():
     print()  # Add a newline after entering the password
 
     # Update packages
-    update_pacman()
+    update_pacman(sudo_password)
 
     if has_yay:
-        update_yay()
+        update_yay(sudo_password)
     else:
         print("You do not have Yay installed.")
 
