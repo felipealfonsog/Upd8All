@@ -159,6 +159,7 @@ def main():
         package_manager = "brew"
     else:
         print("\nInvalid option (Or, you didn't choose any option above). Exiting the program.\n")
+        sys.stdout.flush()  # Flush the output buffer
         sys.exit(1)
 
     # Cancel timer if the user provides a package name
