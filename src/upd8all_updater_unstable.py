@@ -3,9 +3,8 @@ import sys
 import threading
 import getpass
 import subprocess
-import pty
-import time
 import select
+import pty
 
 # Function to print the welcome message
 def print_welcome_message():
@@ -19,34 +18,7 @@ License: BSD 3-Clause (Restrictive)
 ***************************************************************************
 """)
 
-# Function to update Pacman packages
-def update_pacman(sudo_password):
-    print("-------------------------------------")
-    print("Updating Pacman packages...")
-    print("-------------------------------------")
-    command = f"echo {sudo_password} | sudo -S pacman -Syu --noconfirm"
-    execute_command_with_sudo(command, sudo_password)
-    print("-------------------------------------")
-
-# Function to update AUR packages with Yay
-def update_yay(sudo_password):
-    print("-------------------------------------")
-    print("Updating AUR packages with Yay...")
-    print("-------------------------------------")
-    command = f"echo {sudo_password} | sudo -S yay -Syu --noconfirm"
-    execute_command_with_sudo(command, sudo_password)
-    print("-------------------------------------")
-
-# Function to update packages with Homebrew
-def update_brew():
-    print("-------------------------------------")
-    print("Updating packages with Homebrew...")
-    print("-------------------------------------")
-    command = "brew update && brew upgrade"
-    os.system(command)
-    print("-------------------------------------")
-
-# Function to execute a command with or without sudo as needed
+# Function to execute a command with sudo as needed
 def execute_command_with_sudo(command, sudo_password):
     master, slave = pty.openpty()
     proc = subprocess.Popen(
@@ -72,6 +44,27 @@ def execute_command_with_sudo(command, sudo_password):
             print(output)
 
     proc.wait()
+
+# Function to update Pacman packages
+def update_pacman(sudo_password):
+    print("Updating Pacman packages...")
+    print("-------------------------------------")
+    command = f"sudo pacman -Syu --noconfirm"
+    execute_command_with_sudo(command, sudo_password)
+
+# Function to update AUR packages with Yay
+def update_yay(sudo_password):
+    print("Updating AUR packages with Yay...")
+    print("-------------------------------------")
+    command = "yay -Syu --noconfirm"
+    execute_command_with_sudo(command, sudo_password)
+
+# Function to update packages with Homebrew
+def update_brew():
+    print("Updating packages with Homebrew...")
+    print("-------------------------------------")
+    command = "brew update && brew upgrade"
+    os.system(command)
 
 # Function to check the version of a package in a specific package manager
 def check_package_version(package, package_manager):
