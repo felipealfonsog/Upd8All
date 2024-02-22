@@ -12,8 +12,8 @@ def print_welcome_message():
 Welcome to the Upd8All Updater ⚙
 =======================================
 Description: Upd8All is a versatile and comprehensive package update tool meticulously 
-crafted to cater to the needs of Arch Linux users. No more worried about sudo, and continuos 
-updating of the sytem with pacman, yay and brew (Suited my needs).
+crafted to cater to the needs of Arch Linux users. No more worried about sudo, and continuous 
+updating of the system with pacman, yay, and brew (Suited my needs).
 -------------------------------------------------------------------------------------
 Creator/Engineer: Felipe Alfonso Gonzalez - github.com/felipealfonsog - f.alfonso@res-ear.ch
 License: BSD 3-Clause (Restrictive: Ask about it)
@@ -147,6 +147,11 @@ def main():
 
         selected_option = input("Enter the option number (e.g., 1) or 'q' to quit: ").strip().lower()
 
+        # Check if the timer has expired
+        if not timer_thread.is_alive():
+            print("\nTime's up. Program execution has ended.\n")
+            sys.exit(0)
+
         # Check if the user wants to quit
         if selected_option == 'q':
             print("\nExiting the program.\n")
@@ -156,23 +161,25 @@ def main():
         package_manager = ""
         if selected_option == '1':
             package_manager = "pacman"
+            break
         elif selected_option == '2' and has_yay:
             package_manager = "yay"
+            break
         elif selected_option == '3' and has_brew:
             package_manager = "brew"
+            break
         else:
             print("\nInvalid option. Please enter a valid option number or 'q' to quit.\n")
             continue
 
-        # Cancel timer if the user provides a package manager option
-        timer_thread.cancel()
+    # Cancel timer if the user provides a package manager option
+    timer_thread.cancel()
 
-        # Request package name
-        package = input("Enter the name of the package to check its version (e.g., gh): ").strip().lower()
+    # Request package name
+    package = input("Enter the name of the package to check its version (e.g., gh): ").strip().lower()
 
-        # Check the version of the specified package
-        check_package_version(package, package_manager)
-        break
+    # Check the version of the specified package
+    check_package_version(package, package_manager)
 
 if __name__ == "__main__":
     main()
