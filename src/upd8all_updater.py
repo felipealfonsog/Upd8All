@@ -3,6 +3,8 @@ import sys
 import threading
 import getpass
 import subprocess
+import select
+import pty
 
 # Function to print the welcome message
 def print_welcome_message():
@@ -16,46 +18,48 @@ License: BSD 3-Clause (Restrictive)
 ***************************************************************************
 """)
 
-# Function to execute a command with or without sudo as needed
+# Function to execute a command with sudo as needed
 def execute_command_with_sudo(command, sudo_password):
+    master, slave = pty.openpty()
     proc = subprocess.Popen(
         command,
         shell=True,
         stdin=subprocess.PIPE,
-        stdout=subprocess.PIPE,
-        stderr=subprocess.PIPE,
-        universal_newlines=True
+        stdout=slave,
+        stderr=slave,
+        close_fds=True
     )
 
-    # Send sudo password if necessary
-    if command.startswith("sudo"):
-        sudo_prompt = proc.communicate(f"{sudo_password}\n")[1]
-        if "Sorry" in sudo_prompt:  # If "Sorry" in sudo prompt, password was incorrect
-            print("Incorrect sudo password. Exiting.")
-            sys.exit(1)
+    # Send sudo password if requested
+    while True:
+        r, _, _ = select.select([slave], [], [])
+        if r:
+            output = os.read(slave, 1024).decode().strip()
+            if "password" in output.lower():
+                os.write(master, (sudo_password + "\n").encode())
+            elif not output:
+                break
+            print(output)
 
-    # Read output
-    stdout, stderr = proc.communicate()
-    print(stdout)
-    print(stderr)
+    proc.wait()
 
 # Function to update Pacman packages
 def update_pacman(sudo_password):
-    print("\nUpdating Pacman packages...")
+    print("Updating Pacman packages...")
     print("-------------------------------------")
     command = "sudo pacman -Syu --noconfirm"
     execute_command_with_sudo(command, sudo_password)
 
 # Function to update AUR packages with Yay
-def update_yay(sudo_password):
-    print("\nUpdating AUR packages with Yay...")
+def update_yay():
+    print("Updating AUR packages with Yay...")
     print("-------------------------------------")
     command = "yay -Syu --noconfirm"
-    execute_command_with_sudo(command, sudo_password)
+    os.system(command)
 
 # Function to update packages with Homebrew
 def update_brew():
-    print("\nUpdating packages with Homebrew...")
+    print("Updating packages with Homebrew...")
     print("-------------------------------------")
     command = "brew update && brew upgrade"
     os.system(command)
@@ -72,7 +76,7 @@ def check_package_version(package, package_manager):
         print(f"Package manager {package_manager} not recognized.")
         return
     
-    print(f"\nChecking version of {package} using {package_manager}...")
+    print(f"Checking version of {package} using {package_manager}...")
     os.system(command)
 
 # Function executed in a separate thread to show a warning message if no package name is entered within 1 minute
@@ -102,18 +106,16 @@ def main():
     sudo_password = getpass.getpass(prompt="Enter your sudo password: ")
     print()  # Add a newline after entering the password
 
-    # Update packages
+    # Update Pacman packages
     update_pacman(sudo_password)
 
+    # Update AUR packages with Yay
     if has_yay:
-        update_yay(sudo_password)
-    else:
-        print("\nYou do not have Yay installed.")
+        update_yay()
 
+    # Update packages with Homebrew
     if has_brew:
         update_brew()
-    else:
-        print("\nYou do not have Brew installed.")
 
     # Start timing thread
     timer_thread = threading.Timer(60, timeout_warning)
