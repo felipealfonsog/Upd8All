@@ -149,7 +149,8 @@ def main():
     print("\nNote: If no further input is provided within 1 minute, the program will terminate.\n")
 
     # Request package name and package manager to check its version
-    while True:
+    valid_option_selected = False
+    while not valid_option_selected:
         print("Select the package manager to check the version:")
         print("1. Pacman")
         if has_yay:
@@ -176,15 +177,16 @@ def main():
             print("\nInvalid option. Please enter a valid option number or 'q' to quit.\n")
             continue  # Repeat the loop to ask for a valid option
 
-        # Cancel timer if the user provides a package name
-        timer_thread.cancel()
+        valid_option_selected = True  # Set the flag to True indicating a valid option was selected
 
-        # Request package name
-        package = input("Enter the name of the package to check its version (e.g., gh): ").strip().lower()
+    # Cancel timer if the user provides a package name
+    timer_thread.cancel()
 
-        # Check the version of the specified package
-        check_package_version(package, package_manager)
-        break
+    # Request package name
+    package = input("Enter the name of the package to check its version (e.g., gh): ").strip().lower()
+
+    # Check the version of the specified package
+    check_package_version(package, package_manager)
 
 if __name__ == "__main__":
     main()
