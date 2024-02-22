@@ -1,4 +1,4 @@
-## Upd8All 🔄
+## Upd8All 🔄 ⚙
 
 Upd8All: Simplifying Package Updates for Arch Linux
 
