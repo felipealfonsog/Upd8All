@@ -172,7 +172,7 @@ def main():
         package_manager = "yay"
     elif selected_option == '3' and has_brew:
         package_manager = "brew"
-    elif selected_option == "":
+    else:
         print("\nInvalid option (Or, you didn't choose any option above). Exiting the program.\n")
         sys.stdout.flush()  # Flush the output buffer
         sys.exit(1)
