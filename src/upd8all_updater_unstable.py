@@ -145,9 +145,7 @@ def main():
     else:
         print("You do not have Brew installed.")
 
-    # Start timing thread
-    timer_thread = threading.Timer(60, timeout_warning)
-    timer_thread.start()
+
 
     # Inform the user about program termination after 1 minute of inactivity
     print("\nNote: If no further input is provided within 1 minute, the program will terminate.\n")
@@ -196,6 +194,10 @@ def main():
 
     # Check the version of the specified package
     check_package_version(package, package_manager)
+    
+    # Start timing thread
+    timer_thread = threading.Timer(60, timeout_warning)
+    timer_thread.start()
 
 if __name__ == "__main__":
     main()
