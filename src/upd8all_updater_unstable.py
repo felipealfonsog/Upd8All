@@ -52,7 +52,7 @@ def update_yay():
     with open(config_file, "w") as f:
         json.dump({"misc": {"save": True}}, f)
     command = "yay -Syu --noconfirm"
-    execute_command_with_sudo(command)
+    os.system(command)
 
 # Function to update packages with Homebrew
 def update_brew():
