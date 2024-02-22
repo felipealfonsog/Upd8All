@@ -66,9 +66,10 @@ def update_yay(sudo_password):
 
 # Function to update packages with Homebrew
 def update_brew():
-    print("Updating packages with Homebrew...")
+    print("\nUpdating packages with Homebrew...")
     print("-------------------------------------")
     command = "brew update && brew upgrade"
+    print("\n-----------------------------------\n")
     os.system(command)
 
 # Function to check the version of a package in a specific package manager
@@ -156,7 +157,7 @@ def main():
     elif selected_option == '3' and has_brew:
         package_manager = "brew"
     else:
-        print("\nInvalid option. Exiting the program.\n")
+        print("\nInvalid option (Or, you didn't choose any option above). Exiting the program.\n")
         sys.exit(1)
 
     # Cancel timer if the user provides a package name
