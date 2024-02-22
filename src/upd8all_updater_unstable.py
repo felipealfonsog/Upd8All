@@ -24,8 +24,8 @@ def execute_command_with_sudo(command):
     proc = subprocess.Popen(
         ["sudo", "-S", *command.split()],
         stdin=subprocess.PIPE,
-        stdout=subprocess.DEVNULL,
-        stderr=subprocess.DEVNULL,
+        stdout=sys.stdout,
+        stderr=sys.stderr,
         universal_newlines=True
     )
 
