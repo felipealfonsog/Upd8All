@@ -39,14 +39,15 @@ def execute_command_with_sudo(command, sudo_password):
         sys.exit(1)
 
 # Function to update Pacman packages
-def update_pacman():
+def update_pacman(sudo_password):
     print("\nUpdating Pacman packages...")
     print("-------------------------------------")
     command = "pacman -Syu --noconfirm"
     execute_command_with_sudo(command, sudo_password)
 
+
 # Function to update AUR packages with Yay
-def update_yay():
+def update_yay(sudo_password):
     print("\nUpdating AUR packages with Yay...")
     print("-------------------------------------")
     config_path = os.path.expanduser("~/.config/yay/")
@@ -56,7 +57,21 @@ def update_yay():
         json.dump({"misc": {"save": True}}, f)
   
     command = "yay -Syu --noconfirm"
-    execute_command_with_sudo(command)
+    
+    # Verificar si se necesita sudo para el comando Yay
+    need_sudo = False
+    try:
+        subprocess.run(command.split(), stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL, check=True)
+    except subprocess.CalledProcessError:
+        need_sudo = True
+    
+    if need_sudo:
+        # Ejecutar el comando Yay con sudo si es necesario
+        execute_command_with_sudo(command, sudo_password)
+    else:
+        # Ejecutar el comando Yay directamente sin sudo
+        os.system(command)
+
 
 
 # Function to update packages with Homebrew
@@ -112,10 +127,10 @@ def main():
     print()  # Add a newline after entering the password
 
     # Update packages
-    update_pacman()
+    update_pacman(sudo_password)
 
     if has_yay:
-        update_yay()
+        update_yay(sudo_password)
     else:
         print("You do not have Yay installed.")
 
