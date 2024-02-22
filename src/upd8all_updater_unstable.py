@@ -130,10 +130,6 @@ def main():
     update_pacman(sudo_password)
 
     if has_yay:
-        
-        
-        
-        
         update_yay(sudo_password)
     else:
         print("You do not have Yay installed.")
@@ -193,6 +189,7 @@ while True:
     # Check the version of the specified package
     check_package_version(package, package_manager)
     break
+
 
 
 if __name__ == "__main__":
