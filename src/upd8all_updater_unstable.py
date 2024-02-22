@@ -37,14 +37,14 @@ def execute_command_with_sudo(command):
 
 # Function to update Pacman packages
 def update_pacman():
-    print("Updating Pacman packages...")
+    print("\nUpdating Pacman packages...\n")
     print("-------------------------------------")
     command = "pacman -Syu --noconfirm"
     execute_command_with_sudo(command)
 
 # Function to update AUR packages with Yay
 def update_yay():
-    print("Updating AUR packages with Yay...")
+    print("\nUpdating AUR packages with Yay...\n")
     print("-------------------------------------")
     config_path = os.path.expanduser("~/.config/yay/")
     os.makedirs(config_path, exist_ok=True)
