@@ -3,8 +3,6 @@ import sys
 import threading
 import getpass
 import subprocess
-import select
-import pty
 
 # Function to print the welcome message
 def print_welcome_message():
@@ -18,27 +16,26 @@ License: BSD 3-Clause (Restrictive)
 ***************************************************************************
 """)
 
-# Function to execute a command with sudo as needed
+# Function to execute a command with or without sudo as needed
 def execute_command_with_sudo(command, sudo_password):
-    master, slave = pty.openpty()
     proc = subprocess.Popen(
-        ["sudo", "-S"] + command.split(),
+        command,
+        shell=True,
         stdin=subprocess.PIPE,
         stdout=subprocess.PIPE,
         stderr=subprocess.PIPE,
         universal_newlines=True
     )
 
-    # Send sudo password
-    sudo_prompt = proc.communicate(f"{sudo_password}\n")[1]
-    if "Sorry" in sudo_prompt:  # If "Sorry" in sudo prompt, password was incorrect
-        print("Incorrect sudo password. Exiting.")
-        sys.exit(1)
+    # Send sudo password if necessary
+    if command.startswith("sudo"):
+        sudo_prompt = proc.communicate(f"{sudo_password}\n")[1]
+        if "Sorry" in sudo_prompt:  # If "Sorry" in sudo prompt, password was incorrect
+            print("Incorrect sudo password. Exiting.")
+            sys.exit(1)
 
     # Read output
     stdout, stderr = proc.communicate()
-    if "sudo" in stdout:
-        print("sudo usage has been automated.")
     print(stdout)
     print(stderr)
 
@@ -46,7 +43,7 @@ def execute_command_with_sudo(command, sudo_password):
 def update_pacman(sudo_password):
     print("\nUpdating Pacman packages...")
     print("-------------------------------------")
-    command = "pacman -Syu --noconfirm"
+    command = "sudo pacman -Syu --noconfirm"
     execute_command_with_sudo(command, sudo_password)
 
 # Function to update AUR packages with Yay
