@@ -174,8 +174,11 @@ def main():
             print("\nInvalid option. Please enter a valid option number or 'q' to quit.\n")
             continue  # Repeat the loop to ask for a valid option
 
-        # Cancel timer if the user provides a package manager
-        timer_thread.cancel()
+        if selected_option.isdigit() or selected_option == 'q':
+            timer_thread.cancel()
+        else:
+            timer_thread.start()
+
 
         # Request package name
         package = input("Enter the name of the package to check its version (e.g., gh): ").strip().lower()
