@@ -54,7 +54,7 @@ def update_yay(sudo_password):
     os.makedirs(config_path, exist_ok=True)
     config_file = os.path.join(config_path, "config.json")
     with open(config_file, "w") as f:
-        json.dump({"misc": {"save": True}}, f)
+        json.dump({"misc": {"save": True}, "Sudo": False}, f)
     command = "yay -Syu --noconfirm"
     execute_command_with_sudo(command, sudo_password)
 
