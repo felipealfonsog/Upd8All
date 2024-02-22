@@ -40,7 +40,14 @@ def update_pacman():
     print("Updating Pacman packages...")
     print("-------------------------------------")
     command = "pacman -Syu --noconfirm"
-    execute_command_with_sudo(command)
+    proc = subprocess.Popen(
+        ["sudo", "-S", *command.split()],
+        stdin=subprocess.PIPE,
+        stdout=sys.stdout,
+        stderr=sys.stderr,
+        universal_newlines=True
+    )
+    proc.communicate(input=sudo_password + '\n')
 
 # Function to update AUR packages with Yay
 def update_yay():
