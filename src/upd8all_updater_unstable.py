@@ -22,30 +22,25 @@ License: BSD 3-Clause (Restrictive)
 # Function to execute a command with sudo as needed
 def execute_command_with_sudo(command, sudo_password):
     if command.startswith("sudo"):
-        master, slave = pty.openpty()
         proc = subprocess.Popen(
             command,
             shell=True,
             stdin=subprocess.PIPE,
-            stdout=slave,
-            stderr=slave,
-            close_fds=True
+            stdout=subprocess.PIPE,
+            stderr=subprocess.PIPE,
+            universal_newlines=True
         )
 
         # Send sudo password
-        os.write(master, (sudo_password + "\n").encode())
-        os.close(master)
+        sudo_prompt = proc.communicate(f"{sudo_password}\n")[1]
+        if "Sorry" in sudo_prompt:  # If "Sorry" in sudo prompt, password was incorrect
+            print("Incorrect sudo password. Exiting.")
+            sys.exit(1)
 
         # Read output
-        while True:
-            r, _, _ = select.select([slave], [], [])
-            if r:
-                output = os.read(slave, 1024).decode().strip()
-                if not output:
-                    break
-                print(output)
-
-        proc.wait()
+        stdout, stderr = proc.communicate()
+        print(stdout)
+        print(stderr)
     else:
         os.system(command)
 
@@ -74,6 +69,7 @@ def update_brew():
     print("\nUpdating packages with Homebrew...")
     print("-------------------------------------")
     command = "brew update && brew upgrade"
+
     os.system(command)
     print("\n-----------------------------------\n")
     
@@ -95,6 +91,7 @@ def check_package_version(package, package_manager):
 # Function executed in a separate thread to show a warning message if no package name is entered within 1 minute
 def timeout_warning():
     print("\nTime's up. Program execution has ended.\n")
+    sys.stdout.flush()  # Flush the output buffer
     sys.exit(0)
 
 
@@ -166,6 +163,7 @@ def main():
         package_manager = "brew"
     else:
         print("\nInvalid option (Or, you didn't choose any option above). Exiting the program.\n")
+        sys.stdout.flush()  # Flush the output buffer
         sys.exit(1)
 
     # Cancel timer if the user provides a package name
