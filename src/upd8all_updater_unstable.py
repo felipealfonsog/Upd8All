@@ -36,13 +36,9 @@ def execute_command_with_sudo(command, sudo_password):
         sys.exit(1)
 
     # Read output
-    while True:
-        output = proc.stdout.readline()
-        if output == '' and proc.poll() is not None:
-            break
-        if output:
-            print(output.strip())
-    proc.wait()
+    stdout, stderr = proc.communicate()
+    print(stdout)
+    print(stderr)
 
 # Function to update Pacman packages
 def update_pacman(sudo_password):
