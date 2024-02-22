@@ -46,14 +46,14 @@ def execute_command_with_sudo(command, sudo_password):
     proc.wait()
 
 # Function to update Pacman packages
-def update_pacman(sudo_password):
+def update_pacman():
     print("Updating Pacman packages...")
     print("-------------------------------------")
-    command = f"sudo pacman -Syu --noconfirm"
+    command = "sudo pacman -Syu --noconfirm"
     execute_command_with_sudo(command, sudo_password)
 
 # Function to update AUR packages with Yay
-def update_yay(sudo_password):
+def update_yay():
     print("Updating AUR packages with Yay...")
     print("-------------------------------------")
     command = "yay -Syu --noconfirm"
@@ -87,6 +87,8 @@ def timeout_warning():
     sys.exit(0)
 
 def main():
+    global sudo_password  # Make sudo_password accessible globally
+
     # Print welcome message
     print_welcome_message()
 
@@ -109,10 +111,10 @@ def main():
     print()  # Add a newline after entering the password
 
     # Update packages
-    update_pacman(sudo_password)
+    update_pacman()
 
     if has_yay:
-        update_yay(sudo_password)
+        update_yay()
     else:
         print("You do not have Yay installed.")
 
