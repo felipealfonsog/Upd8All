@@ -3,7 +3,6 @@ import sys
 import threading
 import getpass
 import subprocess
-import select
 import json
 
 # Function to print the welcome message
@@ -148,44 +147,43 @@ def main():
     print("\nNote: If no further input is provided within 1 minute, the program will terminate.\n")
 
 
-    
-    # Request package name and package manager to check its version
-    print("Select the package manager to check the version:")
-    print("1. Pacman")
-    if has_yay:
-        print("2. Yay")
-    if has_brew:
-        print("3. Brew")
+    while True:
+        # Request package name and package manager to check its version
+        print("Select the package manager to check the version:")
+        print("1. Pacman")
+        if has_yay:
+            print("2. Yay")
+        if has_brew:
+            print("3. Brew")
 
-    selected_option = input("Enter the option number (e.g., 1) or 'q' to quit: ").strip().lower()
+        selected_option = input("Enter the option number (e.g., 1) or 'q' to quit: ").strip().lower()
 
-    # Check if the user wants to quit
-    if selected_option == 'q':
-        print("\nExiting the program.\n")
-        timer_thread.cancel()  # Cancel the timer immediately
-        sys.exit(0)
+        # Check if the user wants to quit
+        if selected_option == 'q':
+            print("\nExiting the program.\n")
+            timer_thread.cancel()  # Cancel the timer immediately
+            sys.exit(0)
 
-    package_manager = ""
-    if selected_option == '1':
-        package_manager = "pacman"
-    elif selected_option == '2' and has_yay:
-        package_manager = "yay"
-    elif selected_option == '3' and has_brew:
-        package_manager = "brew"
-    else:
-        print("\nInvalid option (Or, you didn't choose any option above). Exiting the program.\n")
-        sys.stdout.flush()  # Flush the output buffer
-        sys.exit(1)
+        package_manager = ""
+        if selected_option == '1':
+            package_manager = "pacman"
+        elif selected_option == '2' and has_yay:
+            package_manager = "yay"
+        elif selected_option == '3' and has_brew:
+            package_manager = "brew"
+        else:
+            print("\nInvalid option. Please enter a valid option number or 'q' to quit.\n")
+            continue
 
-        
-    # Cancel timer if the user provides a package name
-    timer_thread.cancel()
+        # Cancel timer if the user provides a package name
+        timer_thread.cancel()
 
-    # Request package name
-    package = input("Enter the name of the package to check its version (e.g., gh): ").strip().lower()
+        # Request package name
+        package = input("Enter the name of the package to check its version (e.g., gh): ").strip().lower()
 
-    # Check the version of the specified package
-    check_package_version(package, package_manager)
+        # Check the version of the specified package
+        check_package_version(package, package_manager)
+        break
 
 if __name__ == "__main__":
     main()
