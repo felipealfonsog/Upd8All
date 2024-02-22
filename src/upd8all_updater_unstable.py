@@ -23,7 +23,7 @@ def execute_command_with_sudo(command, sudo_password):
     proc = subprocess.Popen(
         ["sudo", "-S", *command.split()],
         stdin=subprocess.PIPE,
-        stdout=sys.stdout,
+        stdout=subprocess.PIPE,  # Pipe stdout to avoid printing sudo password prompt
         stderr=sys.stderr,
         universal_newlines=True
     )
@@ -58,7 +58,7 @@ def update_yay(sudo_password):
   
     command = "yay -Syu --noconfirm"
     
-    # Verificar si se necesita sudo para el comando Yay
+    # Check if sudo is required for the Yay command
     need_sudo = False
     try:
         subprocess.run(command.split(), stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL, check=True)
@@ -66,10 +66,10 @@ def update_yay(sudo_password):
         need_sudo = True
     
     if need_sudo:
-        # Ejecutar el comando Yay con sudo si es necesario
+        # Execute Yay command with sudo if necessary
         execute_command_with_sudo(command, sudo_password)
     else:
-        # Ejecutar el comando Yay directamente sin sudo
+        # Execute Yay command directly without sudo
         os.system(command)
 
 # Function to update packages with Homebrew
@@ -122,7 +122,6 @@ def main():
         has_brew = False
 
     # Request sudo password at the start of the program
-    global sudo_password
     sudo_password = getpass.getpass(prompt="Enter your sudo password: ")
     print()  # Add a newline after entering the password
 
