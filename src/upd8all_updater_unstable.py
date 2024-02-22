@@ -175,14 +175,12 @@ def main():
             print("\nInvalid option. Please enter a valid option number or 'q' to quit.\n")
             continue  # Repeat the loop to ask for a valid option
 
-        # Cancel the timer if the user provides a valid option or chooses to quit
-        if selected_option.isdigit() and 1 <= int(selected_option) <= 3 or selected_option == 'q':
-            timer_thread.cancel()
-        else:
-            # Restart the timer if the user does not provide a valid option
+        # Restart the timer if the user does not provide a valid option or does not enter anything
+        if not (selected_option.isdigit() and 1 <= int(selected_option) <= 3) and selected_option != 'q' and selected_option != '':
             timer_thread.cancel()
             timer_thread = threading.Timer(60, timeout_warning)
             timer_thread.start()
+
 
 
         # Request package name
