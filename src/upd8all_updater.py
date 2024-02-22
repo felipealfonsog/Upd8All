@@ -37,26 +37,28 @@ def execute_command_with_sudo(command, sudo_password):
 
     # Read output
     stdout, stderr = proc.communicate()
+    if "sudo" in stdout:
+        print("sudo usage has been automated.")
     print(stdout)
     print(stderr)
 
 # Function to update Pacman packages
 def update_pacman(sudo_password):
-    print("Updating Pacman packages...")
+    print("\nUpdating Pacman packages...")
     print("-------------------------------------")
     command = "pacman -Syu --noconfirm"
     execute_command_with_sudo(command, sudo_password)
 
 # Function to update AUR packages with Yay
 def update_yay(sudo_password):
-    print("Updating AUR packages with Yay...")
+    print("\nUpdating AUR packages with Yay...")
     print("-------------------------------------")
     command = "yay -Syu --noconfirm"
     execute_command_with_sudo(command, sudo_password)
 
 # Function to update packages with Homebrew
 def update_brew():
-    print("Updating packages with Homebrew...")
+    print("\nUpdating packages with Homebrew...")
     print("-------------------------------------")
     command = "brew update && brew upgrade"
     os.system(command)
@@ -73,12 +75,12 @@ def check_package_version(package, package_manager):
         print(f"Package manager {package_manager} not recognized.")
         return
     
-    print(f"Checking version of {package} using {package_manager}...")
+    print(f"\nChecking version of {package} using {package_manager}...")
     os.system(command)
 
 # Function executed in a separate thread to show a warning message if no package name is entered within 1 minute
 def timeout_warning():
-    print("Time's up. Program execution has ended.")
+    print("\nTime's up. Program execution has ended.")
     sys.exit(0)
 
 def main():
@@ -109,19 +111,19 @@ def main():
     if has_yay:
         update_yay(sudo_password)
     else:
-        print("You do not have Yay installed.")
+        print("\nYou do not have Yay installed.")
 
     if has_brew:
         update_brew()
     else:
-        print("You do not have Brew installed.")
+        print("\nYou do not have Brew installed.")
 
     # Start timing thread
     timer_thread = threading.Timer(60, timeout_warning)
     timer_thread.start()
 
     # Request package name and package manager to check its version
-    print("Select the package manager to check the version:")
+    print("\nSelect the package manager to check the version:")
     print("1. Pacman")
     if has_yay:
         print("2. Yay")
@@ -132,7 +134,7 @@ def main():
 
     # Check if the user wants to quit
     if selected_option == 'q':
-        print("Exiting the program.")
+        print("\nExiting the program.")
         timer_thread.cancel()  # Cancel the timer immediately
         sys.exit(0)
 
@@ -144,14 +146,14 @@ def main():
     elif selected_option == '3' and has_brew:
         package_manager = "brew"
     else:
-        print("Invalid option. Exiting the program.")
+        print("\nInvalid option. Exiting the program.")
         sys.exit(1)
 
     # Cancel timer if the user provides a package name
     timer_thread.cancel()
 
     # Request package name
-    package = input("Enter the name of the package to check its version (e.g., gh): ").strip().lower()
+    package = input("\nEnter the name of the package to check its version (e.g., gh): ").strip().lower()
 
     # Check the version of the specified package
     check_package_version(package, package_manager)
