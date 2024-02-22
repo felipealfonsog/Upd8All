@@ -24,8 +24,8 @@ def execute_command_with_sudo(command):
     proc = subprocess.Popen(
         ["sudo", "-S", *command.split()],
         stdin=subprocess.PIPE,
-        stdout=subprocess.DEVNULL,
-        stderr=subprocess.DEVNULL,
+        stdout=subprocess.PIPE,
+        stderr=subprocess.PIPE,
         universal_newlines=True
     )
 
@@ -52,7 +52,14 @@ def update_yay():
     with open(config_file, "w") as f:
         json.dump({"misc": {"save": True}}, f)
     command = "yay -Syu --noconfirm"
-    os.system(command)
+    proc = subprocess.Popen(
+        ["sudo", "-S", *command.split()],
+        stdin=subprocess.PIPE,
+        stdout=sys.stdout,
+        stderr=sys.stderr,
+        universal_newlines=True
+    )
+    proc.communicate(input=sudo_password + '\n')
 
 # Function to update packages with Homebrew
 def update_brew():
