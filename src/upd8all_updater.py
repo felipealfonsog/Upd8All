@@ -58,7 +58,6 @@ def update_yay(sudo_password):
     execute_command_with_sudo(command, sudo_password)
 
 
-
 # Function to update packages with Homebrew
 def update_brew():
     print("\nUpdating packages with Homebrew...")
