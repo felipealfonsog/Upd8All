@@ -111,10 +111,11 @@ def main():
     print()  # Add a newline after entering the password
 
     # Update packages
-    update_pacman()
+    update_pacman(sudo_password)
 
     if has_yay:
-        update_yay()
+        update_yay(sudo_password)
+
     else:
         print("You do not have Yay installed.")
 
