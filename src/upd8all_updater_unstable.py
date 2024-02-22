@@ -24,8 +24,8 @@ def execute_command_with_sudo(command):
     proc = subprocess.Popen(
         ["sudo", "-S", *command.split()],
         stdin=subprocess.PIPE,
-        stdout=sys.stdout,
-        stderr=sys.stderr,
+        stdout=subprocess.DEVNULL,
+        stderr=subprocess.DEVNULL,
         universal_newlines=True
     )
 
@@ -37,14 +37,14 @@ def execute_command_with_sudo(command):
 
 # Function to update Pacman packages
 def update_pacman():
-    print("\nUpdating Pacman packages...")
+    print("Updating Pacman packages...")
     print("-------------------------------------")
     command = "pacman -Syu --noconfirm"
     execute_command_with_sudo(command)
 
 # Function to update AUR packages with Yay
 def update_yay():
-    print("\nUpdating AUR packages with Yay...")
+    print("Updating AUR packages with Yay...")
     print("-------------------------------------")
     config_path = os.path.expanduser("~/.config/yay/")
     os.makedirs(config_path, exist_ok=True)
@@ -52,7 +52,7 @@ def update_yay():
     with open(config_file, "w") as f:
         json.dump({"misc": {"save": True}}, f)
     command = "yay -Syu --noconfirm"
-    execute_command_with_sudo(command)
+    os.system(command)
 
 # Function to update packages with Homebrew
 def update_brew():
