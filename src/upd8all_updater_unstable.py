@@ -21,7 +21,6 @@ Developed with love from Chile.
 *************************************************************************************
 """)
 
-
 # Function to execute a command with sudo as needed
 def execute_command_with_sudo(command, sudo_password):
     # Set environment variable to prevent sudo from asking for password
@@ -31,20 +30,21 @@ def execute_command_with_sudo(command, sudo_password):
     proc = subprocess.Popen(
         ["sudo", "-S", *command.split()],
         stdin=subprocess.PIPE,
-        stdout=subprocess.PIPE,  # Changed stdout to PIPE to suppress sudo prompt
+        stdout=sys.stdout,
         stderr=sys.stderr,
         universal_newlines=True,
         env=env  # Pass the modified environment variable
     )
 
     # Send sudo password
-    proc.communicate(sudo_password + '\n')[0]  # Pass the password directly to communicate
+    proc.stdin.write(sudo_password + '\n')
+    proc.stdin.flush()
 
     # Wait for the process to complete
+    proc.communicate()
     if proc.returncode != 0:
         print(f"Error executing command with sudo: {command}")
         sys.exit(1)
-
 
 # Function to update Pacman packages
 def update_pacman(sudo_password):
@@ -52,7 +52,6 @@ def update_pacman(sudo_password):
     print("-------------------------------------")
     command = "pacman -Syu --noconfirm"
     execute_command_with_sudo(command, sudo_password)
-
 
 # Function to update AUR packages with Yay
 def update_yay(sudo_password):
@@ -65,20 +64,7 @@ def update_yay(sudo_password):
         json.dump({"misc": {"save": True}}, f)
   
     command = "yay -Syu --noconfirm"
-    
-    # Check if sudo is required for the Yay command
-    need_sudo = False
-    try:
-        subprocess.run(command.split(), stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL, check=True)
-    except subprocess.CalledProcessError:
-        need_sudo = True
-    
-    if need_sudo:
-        # Execute Yay command with sudo if necessary
-        execute_command_with_sudo(command, sudo_password)
-    else:
-        # Execute Yay command directly without sudo
-        os.system(command)
+    execute_command_with_sudo(command, sudo_password)
 
 # Function to update packages with Homebrew
 def update_brew():
