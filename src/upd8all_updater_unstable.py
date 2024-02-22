@@ -57,8 +57,20 @@ def update_yay(sudo_password):
         json.dump({"misc": {"save": True}}, f)
   
     command = "yay -Syu --noconfirm"
-
-    execute_command_with_sudo(command, sudo_password)
+    
+    # Verificar si se necesita sudo para el comando Yay
+    need_sudo = False
+    try:
+        subprocess.run(command.split(), stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL, check=True)
+    except subprocess.CalledProcessError:
+        need_sudo = True
+    
+    if need_sudo:
+        # Ejecutar el comando Yay con sudo si es necesario
+        execute_command_with_sudo(command, sudo_password)
+    else:
+        # Ejecutar el comando Yay directamente sin sudo
+        os.system(command)
 
 
 
