@@ -12,12 +12,15 @@ def print_welcome_message():
 Welcome to the Upd8All Updater ⚙
 =======================================
 Description: Upd8All is a versatile and comprehensive package update tool meticulously 
-crafted to cater to the needs of Arch Linux users.
-Creator: Felipe Alfonso Gonzalez - github.com/felipealfonsog - f.alfonso@res-ear.ch
-License: BSD 3-Clause (Restrictive)
+crafted to cater to the needs of Arch Linux users. No more worried about sudo, and continuos 
+updating of the sytem with pacman, yay and brew (Suited my needs).
+-------------------------------------------------------------------------------------
+Creator/Engineer: Felipe Alfonso Gonzalez - github.com/felipealfonsog - f.alfonso@res-ear.ch
+License: BSD 3-Clause (Restrictive: Ask about it)
 Developed with love from Chile.
-***************************************************************************
+*************************************************************************************
 """)
+
 
 # Function to execute a command with sudo as needed
 def execute_command_with_sudo(command, sudo_password):
@@ -149,8 +152,12 @@ def main():
     print("\nNote: If no further input is provided within 1 minute, the program will terminate.\n")
 
     # Request package name and package manager to check its version
-    valid_option_selected = False
-    while not valid_option_selected:
+    while True:
+        # Check if the timer has expired
+        if not timer_thread.is_alive():
+            print("\nTime's up. Program execution has ended.\n")
+            sys.exit(0)
+
         print("Select the package manager to check the version:")
         print("1. Pacman")
         if has_yay:
@@ -169,15 +176,16 @@ def main():
         package_manager = ""
         if selected_option == '1':
             package_manager = "pacman"
+            break
         elif selected_option == '2' and has_yay:
             package_manager = "yay"
+            break
         elif selected_option == '3' and has_brew:
             package_manager = "brew"
+            break
         else:
             print("\nInvalid option. Please enter a valid option number or 'q' to quit.\n")
-            continue  # Repeat the loop to ask for a valid option
-
-        valid_option_selected = True  # Set the flag to True indicating a valid option was selected
+            continue
 
     # Cancel timer if the user provides a package name
     timer_thread.cancel()
