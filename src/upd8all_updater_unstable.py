@@ -1,9 +1,9 @@
 import os
 import sys
-import threading
 import getpass
 import subprocess
 import json
+import time
 
 # Function to print the welcome message
 def print_welcome_message():
@@ -101,20 +101,7 @@ def check_package_version(package, package_manager):
     print(f"Checking version of {package} using {package_manager}...")
     os.system(command)
 
-# Function executed in a separate thread to show a warning message if no package name is entered within 1 minute
-def timeout_warning():
-    global time_up
-    if not input_received and not time_up:
-        print("\nTime's up. Program execution has ended.\n")
-        time_up = True
-        sys.exit(0)
-
 def main():
-    global input_received
-    global time_up
-    input_received = False  # Flag to track if any input is received
-    time_up = False  # Flag to track if the time is up
-
     # Print welcome message
     print_welcome_message()
 
@@ -153,10 +140,12 @@ def main():
     print("\nNote: If no further input is provided within 1 minute, the program will terminate.\n")
 
     # Request package name and package manager to check its version
+    start_time = time.time()
     while True:
-        # Start timing thread
-        timer_thread = threading.Timer(60, timeout_warning)
-        timer_thread.start()
+        elapsed_time = time.time() - start_time
+        if elapsed_time >= 60:
+            print("\nTime's up. Program execution has ended.\n")
+            break
 
         print("Select the package manager to check the version:")
         print("1. Pacman")
@@ -167,18 +156,10 @@ def main():
 
         selected_option = input("Enter the option number (e.g., 1) or 'q' to quit: ").strip().lower()
 
-        # Check if the timer has expired
-        if not timer_thread.is_alive():
-            time_up = True
-            print("\nTime's up. Program execution has ended.\n")
-            sys.exit(0)
-
-        timer_thread.cancel()  # Cancel the timer if input is received
-
         # Check if the user wants to quit
         if selected_option == 'q':
             print("\nExiting the program.\n")
-            sys.exit(0)
+            break
 
         package_manager = ""
         if selected_option == '1':
@@ -190,8 +171,6 @@ def main():
         else:
             print("\nInvalid option. Please enter a valid option number or 'q' to quit.\n")
             continue
-
-        input_received = True  # Set flag to indicate input received
 
         # Request package name
         package = input("Enter the name of the package to check its version (e.g., gh): ").strip().lower()
