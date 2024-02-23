@@ -12,14 +12,15 @@ def print_welcome_message():
 Welcome to the Upd8All Updater ⚙
 =======================================
 Description: Upd8All is a versatile and comprehensive package update tool meticulously 
-crafted to cater to the needs of Arch Linux users. No more worried about sudo, and continuous 
-updating of the system with pacman, yay, and brew (Suited my needs).
+crafted to cater to the needs of Arch Linux users. No more worried about sudo, and continuos 
+updating of the sytem with pacman, yay and brew (Suited my needs).
 -------------------------------------------------------------------------------------
 Creator/Engineer: Felipe Alfonso Gonzalez - github.com/felipealfonsog - f.alfonso@res-ear.ch
 License: BSD 3-Clause (Restrictive: Ask about it)
 Developed with love from Chile.
 *************************************************************************************
 """)
+
 
 # Function to execute a command with sudo as needed
 def execute_command_with_sudo(command, sudo_password):
@@ -46,12 +47,14 @@ def execute_command_with_sudo(command, sudo_password):
         print(f"Error executing command with sudo: {command}")
         sys.exit(1)
 
+
 # Function to update Pacman packages
 def update_pacman(sudo_password):
     print("\nUpdating Pacman packages...")
     print("-------------------------------------")
     command = "pacman -Syu --noconfirm"
     execute_command_with_sudo(command, sudo_password)
+
 
 # Function to update AUR packages with Yay
 def update_yay(sudo_password):
@@ -64,7 +67,20 @@ def update_yay(sudo_password):
         json.dump({"misc": {"save": True}}, f)
   
     command = "yay -Syu --noconfirm"
-    execute_command_with_sudo(command, sudo_password)
+    
+    # Check if sudo is required for the Yay command
+    need_sudo = False
+    try:
+        subprocess.run(command.split(), stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL, check=True)
+    except subprocess.CalledProcessError:
+        need_sudo = True
+    
+    if need_sudo:
+        # Execute the Yay command with sudo if necessary
+        execute_command_with_sudo(command, sudo_password)
+    else:
+        # Execute the Yay command directly without sudo
+        os.system(command)
 
 # Function to update packages with Homebrew
 def update_brew():
@@ -138,6 +154,11 @@ def main():
 
     # Request package name and package manager to check its version
     while True:
+        # Check if the timer has expired
+        if not timer_thread.is_alive():
+            print("\nTime's up. Program execution has ended.\n")
+            sys.exit(0)
+
         print("Select the package manager to check the version:")
         print("1. Pacman")
         if has_yay:
@@ -146,11 +167,6 @@ def main():
             print("3. Brew")
 
         selected_option = input("Enter the option number (e.g., 1) or 'q' to quit: ").strip().lower()
-
-        # Check if the timer has expired
-        if not timer_thread.is_alive():
-            print("\nTime's up. Program execution has ended.\n")
-            sys.exit(0)
 
         # Check if the user wants to quit
         if selected_option == 'q':
@@ -172,7 +188,7 @@ def main():
             print("\nInvalid option. Please enter a valid option number or 'q' to quit.\n")
             continue
 
-    # Cancel timer if the user provides a package manager option
+    # Cancel timer if the user provides a package name
     timer_thread.cancel()
 
     # Request package name
