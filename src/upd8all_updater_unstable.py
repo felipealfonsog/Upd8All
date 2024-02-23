@@ -189,9 +189,6 @@ def main():
             # Request package name
             package = input("Enter the name of the package to check its version (e.g., gh): ").strip().lower()
 
-            # Cancel the alarm signal
-            signal.alarm(0)
-
             # Check if the package manager and package name are valid
             if package_manager in ["pacman", "yay", "brew"]:
                 check_package_version(package, package_manager)
