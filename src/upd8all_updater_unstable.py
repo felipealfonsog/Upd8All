@@ -104,10 +104,9 @@ def check_package_version(package, package_manager):
 # Function executed in a separate thread to show a warning message if no package name is entered within 1 minute
 def timeout_warning():
     global time_up
-    if not input_received:
-        if not time_up:  # Only print the message if time_up is False
-            print("\nTime's up. Program execution has ended.\n")
-            time_up = True
+    if not input_received and not time_up:
+        print("\nTime's up. Program execution has ended.\n")
+        time_up = True
         sys.exit(0)
 
 def main():
