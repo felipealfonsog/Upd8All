@@ -105,12 +105,13 @@ def check_package_version(package, package_manager):
 # Function executed in a separate thread to show a warning message if no package name is entered within 1 minute
 def timeout_warning():
     global time_up
-    if not time_up:
+    if not input_received:
         print("\nTime's up. Program execution has ended.\n")
         sys.exit(0)
 
 def main():
-    global time_up
+    global input_received
+    input_received = False  # Flag to track if any input is received
     time_up = False  # Flag to track if the time is up
 
     # Print welcome message
@@ -187,6 +188,8 @@ def main():
         else:
             print("\nInvalid option. Please enter a valid option number or 'q' to quit.\n")
             continue
+
+        input_received = True  # Set flag to indicate input received
 
         # Cancel timer if the user provides a package manager option
         timer_thread.cancel()
