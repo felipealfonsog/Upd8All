@@ -165,6 +165,9 @@ def main():
             print("\nTime's up. Program execution has ended.\n")
             sys.exit(0)
 
+        # Cancel the alarm signal
+        signal.alarm(0)
+
         # Check if the user wants to quit
         if selected_option == 'q':
             print("\nExiting the program.\n")
