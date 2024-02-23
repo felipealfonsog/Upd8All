@@ -104,10 +104,16 @@ def check_package_version(package, package_manager):
 
 # Function executed in a separate thread to show a warning message if no package name is entered within 1 minute
 def timeout_warning():
-    print("\nTime's up. Program execution has ended.\n")
-    sys.exit(0)
+    global time_up
+    if not input_received:
+        print("\nTime's up. Program execution has ended.\n")
+        sys.exit(0)
 
 def main():
+    global input_received
+    input_received = False  # Flag to track if any input is received
+    time_up = False  # Flag to track if the time is up
+
     # Print welcome message
     print_welcome_message()
 
@@ -142,15 +148,15 @@ def main():
     else:
         print("You do not have Brew installed.")
 
-    # Start timing thread
-    timer_thread = threading.Timer(60, timeout_warning)
-    timer_thread.start()
-
     # Inform the user about program termination after 1 minute of inactivity
     print("\nNote: If no further input is provided within 1 minute, the program will terminate.\n")
 
     # Request package name and package manager to check its version
     while True:
+        # Start timing thread
+        timer_thread = threading.Timer(60, timeout_warning)
+        timer_thread.start()
+
         print("Select the package manager to check the version:")
         print("1. Pacman")
         if has_yay:
@@ -162,13 +168,15 @@ def main():
 
         # Check if the timer has expired
         if not timer_thread.is_alive():
+            time_up = True
             print("\nTime's up. Program execution has ended.\n")
             sys.exit(0)
+
+        timer_thread.cancel()  # Cancel the timer if input is received
 
         # Check if the user wants to quit
         if selected_option == 'q':
             print("\nExiting the program.\n")
-            timer_thread.cancel()  # Cancel the timer immediately
             sys.exit(0)
 
         package_manager = ""
@@ -182,8 +190,7 @@ def main():
             print("\nInvalid option. Please enter a valid option number or 'q' to quit.\n")
             continue
 
-        # Cancel timer if the user provides a valid input
-        timer_thread.cancel()
+        input_received = True  # Set flag to indicate input received
 
         # Request package name
         package = input("Enter the name of the package to check its version (e.g., gh): ").strip().lower()

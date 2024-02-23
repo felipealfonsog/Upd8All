@@ -3,7 +3,6 @@ import sys
 import threading
 import getpass
 import subprocess
-import select
 import json
 
 # Function to print the welcome message
@@ -106,11 +105,14 @@ def check_package_version(package, package_manager):
 def timeout_warning():
     global time_up
     if not input_received:
-        print("\nTime's up. Program execution has ended.\n")
+        if not time_up:  # Only print the message if time_up is False
+            print("\nTime's up. Program execution has ended.\n")
+            time_up = True
         sys.exit(0)
 
 def main():
     global input_received
+    global time_up
     input_received = False  # Flag to track if any input is received
     time_up = False  # Flag to track if the time is up
 
