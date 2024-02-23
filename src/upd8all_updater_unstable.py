@@ -12,15 +12,14 @@ def print_welcome_message():
 Welcome to the Upd8All Updater ⚙
 =======================================
 Description: Upd8All is a versatile and comprehensive package update tool meticulously 
-crafted to cater to the needs of Arch Linux users. No more worried about sudo, and continuos 
-updating of the sytem with pacman, yay and brew (Suited my needs).
+crafted to cater to the needs of Arch Linux users. No more worried about sudo, and continuous 
+updating of the system with pacman, yay, and brew (Suited my needs).
 -------------------------------------------------------------------------------------
 Creator/Engineer: Felipe Alfonso Gonzalez - github.com/felipealfonsog - f.alfonso@res-ear.ch
 License: BSD 3-Clause (Restrictive: Ask about it)
 Developed with love from Chile.
 *************************************************************************************
 """)
-
 
 # Function to execute a command with sudo as needed
 def execute_command_with_sudo(command, sudo_password):
@@ -47,14 +46,12 @@ def execute_command_with_sudo(command, sudo_password):
         print(f"Error executing command with sudo: {command}")
         sys.exit(1)
 
-
 # Function to update Pacman packages
 def update_pacman(sudo_password):
     print("\nUpdating Pacman packages...")
     print("-------------------------------------")
     command = "pacman -Syu --noconfirm"
     execute_command_with_sudo(command, sudo_password)
-
 
 # Function to update AUR packages with Yay
 def update_yay(sudo_password):
