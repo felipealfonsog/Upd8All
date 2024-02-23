@@ -100,7 +100,10 @@ def check_package_version(package, package_manager):
         return
     
     print(f"Checking version of {package} using {package_manager}...")
-    os.system(command)
+    result = os.system(command)
+    if result != 0:
+        print(f"No package named '{package}' found in the system.")
+        sys.exit(1)
 
 # Handler for the alarm signal
 def alarm_handler(signum, frame):
@@ -113,7 +116,6 @@ def main():
 
     # Set up the alarm signal
     signal.signal(signal.SIGALRM, alarm_handler)
-    signal.alarm(60)  # Set the alarm to trigger after 60 seconds
 
     # Check if the user has yay installed
     try:
@@ -133,42 +135,50 @@ def main():
     sudo_password = getpass.getpass(prompt="Enter your sudo password: ")
     print()  # Add a newline after entering the password
 
-    # Update packages
-    update_pacman(sudo_password)
-
-    if has_yay:
-        update_yay(sudo_password)
-    else:
-        print("You do not have Yay installed.")
-
-    if has_brew:
-        update_brew()
-    else:
-        print("You do not have Brew installed.")
-
-    # Inform the user about program termination after 1 minute of inactivity
-    print("\nNote: If no further input is provided within 1 minute, the program will terminate.\n")
-
     while True:
-        # Request package name and package manager to check its version
-        print("Select the package manager to check the version:")
-        print("1. Pacman")
+        signal.alarm(60)  # Set the alarm to trigger after 60 seconds
+
+        # Update packages
+        update_pacman(sudo_password)
+
         if has_yay:
-            print("2. Yay")
+            update_yay(sudo_password)
+        else:
+            print("You do not have Yay installed.")
+
         if has_brew:
-            print("3. Brew")
+            update_brew()
+        else:
+            print("You do not have Brew installed.")
 
-        selected_option = input("Enter the option number (e.g., 1) or 'q' to quit: ").strip().lower()
+        # Inform the user about program termination after 1 minute of inactivity
+        print("\nNote: If no further input is provided within 1 minute, the program will terminate.\n")
 
-        # Check if the timer has expired
-        if not signal.getitimer(signal.ITIMER_REAL)[0]:
-            print("\nTime's up. Program execution has ended.\n")
-            sys.exit(0)
+        # Request package name and package manager to check its version
+        while True:
+            print("Select the package manager to check the version:")
+            print("1. Pacman")
+            if has_yay:
+                print("2. Yay")
+            if has_brew:
+                print("3. Brew")
 
-        # Check if the user wants to quit
-        if selected_option == 'q':
-            print("\nExiting the program.\n")
-            sys.exit(0)
+            selected_option = input("Enter the option number (e.g., 1) or 'q' to quit: ").strip().lower()
+
+            # Check if the timer has expired
+            if not signal.getitimer(signal.ITIMER_REAL)[0]:
+                print("\nTime's up. Program execution has ended.\n")
+                sys.exit(0)
+
+            # Check if the user wants to quit
+            if selected_option == 'q':
+                print("\nExiting the program.\n")
+                sys.exit(0)
+
+            if selected_option in ['1', '2', '3']:
+                break
+            else:
+                print("\nInvalid option. Please enter a valid option number or 'q' to quit.\n")
 
         package_manager = ""
         if selected_option == '1':
@@ -177,17 +187,12 @@ def main():
             package_manager = "yay"
         elif selected_option == '3' and has_brew:
             package_manager = "brew"
-        else:
-            print("\nInvalid option. Please enter a valid option number or 'q' to quit.\n")
-            continue
 
         # Request package name
         package = input("Enter the name of the package to check its version (e.g., gh): ").strip().lower()
 
         # Check the version of the specified package
         check_package_version(package, package_manager)
-        break
 
 if __name__ == "__main__":
     main()
-
