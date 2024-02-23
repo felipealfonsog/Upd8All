@@ -104,10 +104,15 @@ def check_package_version(package, package_manager):
 
 # Function executed in a separate thread to show a warning message if no package name is entered within 1 minute
 def timeout_warning():
-    print("\nTime's up. Program execution has ended.\n")
-    sys.exit(0)
+    global time_up
+    if not time_up:
+        print("\nTime's up. Program execution has ended.\n")
+        sys.exit(0)
 
 def main():
+    global time_up
+    time_up = False  # Flag to track if the time is up
+
     # Print welcome message
     print_welcome_message()
 
@@ -162,6 +167,7 @@ def main():
 
         # Check if the timer has expired
         if not timer_thread.is_alive():
+            time_up = True
             print("\nTime's up. Program execution has ended.\n")
             sys.exit(0)
 
