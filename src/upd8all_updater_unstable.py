@@ -132,7 +132,8 @@ def main():
     print()  # Add a newline after entering the password
 
     while True:
-        signal.alarm(60)  # Set the alarm to trigger after 60 seconds
+        # Set the alarm to trigger after 60 seconds
+        signal.alarm(60)
 
         # Update packages
         update_pacman(sudo_password)
@@ -150,6 +151,9 @@ def main():
         # Inform the user about program termination after 1 minute of inactivity
         print("\nNote: If no further input is provided within 1 minute, the program will terminate.\n")
 
+        # Cancel the alarm signal
+        signal.alarm(0)
+
         while True:
             # Request package name and package manager to check its version
             print("Select the package manager to check the version:")
@@ -160,14 +164,6 @@ def main():
                 print("3. Brew")
 
             selected_option = input("Enter the option number (e.g., 1) or 'q' to quit: ").strip().lower()
-
-            # Check if the timer has expired
-            if not signal.getitimer(signal.ITIMER_REAL)[0]:
-                print("\nTime's up. Program execution has ended.\n")
-                sys.exit(0)
-
-            # Cancel the alarm signal
-            signal.alarm(0)
 
             # Check if the user wants to quit
             if selected_option == 'q':
