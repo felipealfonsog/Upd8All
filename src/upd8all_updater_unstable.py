@@ -148,15 +148,15 @@ def main():
     else:
         print("You do not have Brew installed.")
 
-    # Start timing thread
-    timer_thread = threading.Timer(60, timeout_warning)
-    timer_thread.start()
-
     # Inform the user about program termination after 1 minute of inactivity
     print("\nNote: If no further input is provided within 1 minute, the program will terminate.\n")
 
     # Request package name and package manager to check its version
     while True:
+        # Start timing thread
+        timer_thread = threading.Timer(60, timeout_warning)
+        timer_thread.start()
+
         print("Select the package manager to check the version:")
         print("1. Pacman")
         if has_yay:
@@ -172,10 +172,11 @@ def main():
             print("\nTime's up. Program execution has ended.\n")
             sys.exit(0)
 
+        timer_thread.cancel()  # Cancel the timer if input is received
+
         # Check if the user wants to quit
         if selected_option == 'q':
             print("\nExiting the program.\n")
-            timer_thread.cancel()  # Cancel the timer immediately
             sys.exit(0)
 
         package_manager = ""
@@ -190,9 +191,6 @@ def main():
             continue
 
         input_received = True  # Set flag to indicate input received
-
-        # Cancel timer if the user provides a package manager option
-        timer_thread.cancel()
 
         # Request package name
         package = input("Enter the name of the package to check its version (e.g., gh): ").strip().lower()
