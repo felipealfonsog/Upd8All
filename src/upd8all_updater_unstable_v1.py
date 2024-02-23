@@ -1,9 +1,10 @@
 import os
 import sys
+import threading
 import getpass
 import subprocess
+import select
 import json
-import signal
 
 # Function to print the welcome message
 def print_welcome_message():
@@ -12,7 +13,7 @@ Welcome to the Upd8All Updater ⚙
 =======================================
 Description: Upd8All is a versatile and comprehensive package update tool meticulously 
 crafted to cater to the needs of Arch Linux users. No more worried about sudo, and continuous 
-updating of the system with pacman, yay, and brew (You can even configure this as a service).
+updating of the system with pacman, yay, and brew (Suited my needs).
 -------------------------------------------------------------------------------------
 Creator/Engineer: Felipe Alfonso Gonzalez - github.com/felipealfonsog - f.alfonso@res-ear.ch
 License: BSD 3-Clause (Restrictive: Ask about it)
@@ -101,18 +102,20 @@ def check_package_version(package, package_manager):
     print(f"Checking version of {package} using {package_manager}...")
     os.system(command)
 
-# Handler for the alarm signal
-def alarm_handler(signum, frame):
-    print("\nTime's up. Program execution has ended.\n")
-    sys.exit(0)
+# Function executed in a separate thread to show a warning message if no package name is entered within 1 minute
+def timeout_warning():
+    global time_up
+    if not input_received:
+        print("\nTime's up. Program execution has ended.\n")
+        sys.exit(0)
 
 def main():
+    global input_received
+    input_received = False  # Flag to track if any input is received
+    time_up = False  # Flag to track if the time is up
+
     # Print welcome message
     print_welcome_message()
-
-    # Set up the alarm signal
-    signal.signal(signal.SIGALRM, alarm_handler)
-    signal.alarm(60)  # Set the alarm to trigger after 60 seconds
 
     # Check if the user has yay installed
     try:
@@ -148,8 +151,12 @@ def main():
     # Inform the user about program termination after 1 minute of inactivity
     print("\nNote: If no further input is provided within 1 minute, the program will terminate.\n")
 
+    # Request package name and package manager to check its version
     while True:
-        # Request package name and package manager to check its version
+        # Start timing thread
+        timer_thread = threading.Timer(60, timeout_warning)
+        timer_thread.start()
+
         print("Select the package manager to check the version:")
         print("1. Pacman")
         if has_yay:
@@ -160,9 +167,12 @@ def main():
         selected_option = input("Enter the option number (e.g., 1) or 'q' to quit: ").strip().lower()
 
         # Check if the timer has expired
-        if not signal.getitimer(signal.ITIMER_REAL)[0]:
+        if not timer_thread.is_alive():
+            time_up = True
             print("\nTime's up. Program execution has ended.\n")
             sys.exit(0)
+
+        timer_thread.cancel()  # Cancel the timer if input is received
 
         # Check if the user wants to quit
         if selected_option == 'q':
@@ -179,6 +189,8 @@ def main():
         else:
             print("\nInvalid option. Please enter a valid option number or 'q' to quit.\n")
             continue
+
+        input_received = True  # Set flag to indicate input received
 
         # Request package name
         package = input("Enter the name of the package to check its version (e.g., gh): ").strip().lower()
