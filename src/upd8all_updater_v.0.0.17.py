@@ -112,6 +112,7 @@ def main():
 
     # Set up the alarm signal
     signal.signal(signal.SIGALRM, alarm_handler)
+    signal.alarm(60)  # Set the alarm to trigger after 60 seconds
 
     # Check if the user has yay installed
     try:
@@ -131,25 +132,23 @@ def main():
     sudo_password = getpass.getpass(prompt="Enter your sudo password: ")
     print()  # Add a newline after entering the password
 
+    # Update packages
+    update_pacman(sudo_password)
+
+    if has_yay:
+        update_yay(sudo_password)
+    else:
+        print("You do not have Yay installed.")
+
+    if has_brew:
+        update_brew()
+    else:
+        print("You do not have Brew installed.")
+
+    # Inform the user about program termination after 1 minute of inactivity
+    print("\nNote: If no further input is provided within 1 minute, the program will terminate.\n")
+
     while True:
-        signal.alarm(60)  # Set the alarm to trigger after 60 seconds
-
-        # Update packages
-        update_pacman(sudo_password)
-
-        if has_yay:
-            update_yay(sudo_password)
-        else:
-            print("You do not have Yay installed.")
-
-        if has_brew:
-            update_brew()
-        else:
-            print("You do not have Brew installed.")
-
-        # Inform the user about program termination after 1 minute of inactivity
-        print("\nNote: If no further input is provided within 1 minute, the program will terminate.\n")
-
         # Request package name and package manager to check its version
         print("Select the package manager to check the version:")
         print("1. Pacman")
@@ -186,6 +185,8 @@ def main():
 
         # Check the version of the specified package
         check_package_version(package, package_manager)
+        break
 
 if __name__ == "__main__":
     main()
+
