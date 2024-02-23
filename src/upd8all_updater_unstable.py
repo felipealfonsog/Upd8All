@@ -5,6 +5,9 @@ import subprocess
 import json
 import signal
 
+# Variable global para rastrear si se activó la señal de alarma
+alarm_triggered = False
+
 # Function to print the welcome message
 def print_welcome_message():
     print("""
@@ -103,6 +106,8 @@ def check_package_version(package, package_manager):
 
 # Handler for the alarm signal
 def alarm_handler(signum, frame):
+    global alarm_triggered
+    alarm_triggered = True
     print("\nTime's up. Program execution has ended.\n")
     sys.exit(0)
 
@@ -132,6 +137,10 @@ def main():
     print()  # Add a newline after entering the password
 
     while True:
+        # Reset the alarm triggered flag
+        global alarm_triggered
+        alarm_triggered = False
+
         # Set the alarm to trigger after 60 seconds
         signal.alarm(60)
 
@@ -151,8 +160,9 @@ def main():
         # Inform the user about program termination after 1 minute of inactivity
         print("\nNote: If no further input is provided within 1 minute, the program will terminate.\n")
 
-        # Cancel the alarm signal
-        signal.alarm(0)
+        # Check if the alarm was triggered
+        if alarm_triggered:
+            sys.exit(0)
 
         while True:
             # Request package name and package manager to check its version
@@ -186,6 +196,11 @@ def main():
 
             # Request package name
             package = input("Enter the name of the package to check its version (e.g., gh): ").strip().lower()
+
+            # Check if the timer has expired
+            if alarm_triggered:
+                print("\nTime's up. Program execution has ended.\n")
+                sys.exit(0)
 
             # Check if the package manager and package name are valid
             if package_manager in ["pacman", "yay", "brew"]:
