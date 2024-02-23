@@ -12,7 +12,7 @@ Welcome to the Upd8All Updater ⚙
 =======================================
 Description: Upd8All is a versatile and comprehensive package update tool meticulously 
 crafted to cater to the needs of Arch Linux users. No more worried about sudo, and continuous 
-updating of the system with pacman, yay, and brew (Suited my needs).
+updating of the system with pacman, yay, and brew (You can even configure this as a service).
 -------------------------------------------------------------------------------------
 Creator/Engineer: Felipe Alfonso Gonzalez - github.com/felipealfonsog - f.alfonso@res-ear.ch
 License: BSD 3-Clause (Restrictive: Ask about it)
