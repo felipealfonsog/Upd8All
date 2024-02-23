@@ -165,10 +165,8 @@ def main():
 
             selected_option = input("Enter the option number (e.g., 1) or 'q' to quit: ").strip().lower()
 
-            # Check if the timer has expired
-            if not signal.getitimer(signal.ITIMER_REAL)[0]:
-                print("\nTime's up. Program execution has ended.\n")
-                sys.exit(0)
+            # Cancel the alarm signal
+            signal.alarm(0)
 
             # Check if the user wants to quit
             if selected_option == 'q':
