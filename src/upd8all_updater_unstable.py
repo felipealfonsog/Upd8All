@@ -3,7 +3,7 @@ import sys
 import getpass
 import subprocess
 import json
-import time
+import signal
 
 # Function to print the welcome message
 def print_welcome_message():
@@ -101,9 +101,18 @@ def check_package_version(package, package_manager):
     print(f"Checking version of {package} using {package_manager}...")
     os.system(command)
 
+# Handler for the alarm signal
+def alarm_handler(signum, frame):
+    print("\nTime's up. Program execution has ended.\n")
+    sys.exit(0)
+
 def main():
     # Print welcome message
     print_welcome_message()
+
+    # Set up the alarm signal
+    signal.signal(signal.SIGALRM, alarm_handler)
+    signal.alarm(60)  # Set the alarm to trigger after 60 seconds
 
     # Check if the user has yay installed
     try:
@@ -140,44 +149,36 @@ def main():
     print("\nNote: If no further input is provided within 1 minute, the program will terminate.\n")
 
     # Request package name and package manager to check its version
-    start_time = time.time()
-    while True:
-        elapsed_time = time.time() - start_time
-        if elapsed_time >= 60:
-            print("\nTime's up. Program execution has ended.\n")
-            break
+    print("Select the package manager to check the version:")
+    print("1. Pacman")
+    if has_yay:
+        print("2. Yay")
+    if has_brew:
+        print("3. Brew")
 
-        print("Select the package manager to check the version:")
-        print("1. Pacman")
-        if has_yay:
-            print("2. Yay")
-        if has_brew:
-            print("3. Brew")
+    selected_option = input("Enter the option number (e.g., 1) or 'q' to quit: ").strip().lower()
 
-        selected_option = input("Enter the option number (e.g., 1) or 'q' to quit: ").strip().lower()
+    # Check if the user wants to quit
+    if selected_option == 'q':
+        print("\nExiting the program.\n")
+        sys.exit(0)
 
-        # Check if the user wants to quit
-        if selected_option == 'q':
-            print("\nExiting the program.\n")
-            break
+    package_manager = ""
+    if selected_option == '1':
+        package_manager = "pacman"
+    elif selected_option == '2' and has_yay:
+        package_manager = "yay"
+    elif selected_option == '3' and has_brew:
+        package_manager = "brew"
+    else:
+        print("\nInvalid option. Please enter a valid option number or 'q' to quit.\n")
+        sys.exit(1)
 
-        package_manager = ""
-        if selected_option == '1':
-            package_manager = "pacman"
-        elif selected_option == '2' and has_yay:
-            package_manager = "yay"
-        elif selected_option == '3' and has_brew:
-            package_manager = "brew"
-        else:
-            print("\nInvalid option. Please enter a valid option number or 'q' to quit.\n")
-            continue
+    # Request package name
+    package = input("Enter the name of the package to check its version (e.g., gh): ").strip().lower()
 
-        # Request package name
-        package = input("Enter the name of the package to check its version (e.g., gh): ").strip().lower()
-
-        # Check the version of the specified package
-        check_package_version(package, package_manager)
-        break
+    # Check the version of the specified package
+    check_package_version(package, package_manager)
 
 if __name__ == "__main__":
     main()
