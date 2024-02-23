@@ -151,11 +151,6 @@ def main():
 
     # Request package name and package manager to check its version
     while True:
-        # Check if the timer has expired
-        if not timer_thread.is_alive():
-            print("\nTime's up. Program execution has ended.\n")
-            sys.exit(0)
-
         print("Select the package manager to check the version:")
         print("1. Pacman")
         if has_yay:
@@ -164,6 +159,11 @@ def main():
             print("3. Brew")
 
         selected_option = input("Enter the option number (e.g., 1) or 'q' to quit: ").strip().lower()
+
+        # Check if the timer has expired
+        if not timer_thread.is_alive():
+            print("\nTime's up. Program execution has ended.\n")
+            sys.exit(0)
 
         # Check if the user wants to quit
         if selected_option == 'q':
@@ -174,25 +174,23 @@ def main():
         package_manager = ""
         if selected_option == '1':
             package_manager = "pacman"
-            break
         elif selected_option == '2' and has_yay:
             package_manager = "yay"
-            break
         elif selected_option == '3' and has_brew:
             package_manager = "brew"
-            break
         else:
             print("\nInvalid option. Please enter a valid option number or 'q' to quit.\n")
             continue
 
-    # Cancel timer if the user provides a package name
-    timer_thread.cancel()
+        # Cancel timer if the user provides a valid input
+        timer_thread.cancel()
 
-    # Request package name
-    package = input("Enter the name of the package to check its version (e.g., gh): ").strip().lower()
+        # Request package name
+        package = input("Enter the name of the package to check its version (e.g., gh): ").strip().lower()
 
-    # Check the version of the specified package
-    check_package_version(package, package_manager)
+        # Check the version of the specified package
+        check_package_version(package, package_manager)
+        break
 
 if __name__ == "__main__":
     main()
