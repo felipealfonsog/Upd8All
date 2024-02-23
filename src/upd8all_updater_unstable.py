@@ -188,7 +188,7 @@ def main():
             print("\nInvalid option. Please enter a valid option number or 'q' to quit.\n")
             continue
 
-        # Cancel timer if the user provides a valid input
+        # Cancel timer if the user provides a package manager option
         timer_thread.cancel()
 
         # Request package name
