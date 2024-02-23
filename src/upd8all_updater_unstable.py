@@ -91,10 +91,16 @@ def check_package_version(package, package_manager):
 
 # Function executed in a separate thread to show a warning message if no package name is entered within 1 minute
 def timeout_warning():
-    print("\nTime's up. Program execution has ended.\n")
-    sys.exit(0)
+    global timeout_printed
+    if not timeout_printed:
+        print("\nTime's up. Program execution has ended.\n")
+        timeout_printed = True
+        sys.exit(0)
 
 def main():
+    global timeout_printed
+    timeout_printed = False
+
     # Print welcome message
     print_welcome_message()
 
@@ -138,6 +144,10 @@ def main():
 
     # Request package name and package manager to check its version
     while True:
+        # Check if the timer has expired
+        if not timer_thread.is_alive():
+            timeout_warning()
+
         print("Select the package manager to check the version:")
         print("1. Pacman")
         if has_yay:
@@ -146,11 +156,6 @@ def main():
             print("3. Brew")
 
         selected_option = input("Enter the option number (e.g., 1) or 'q' to quit: ").strip().lower()
-
-        # Check if the timer has expired
-        if not timer_thread.is_alive():
-            print("\nTime's up. Program execution has ended.\n")
-            sys.exit(0)
 
         # Check if the user wants to quit
         if selected_option == 'q':
