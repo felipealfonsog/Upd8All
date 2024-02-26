@@ -10,7 +10,7 @@ def print_welcome_message():
 Welcome to the Upd8All Updater ⚙
 =======================================
 Description: Upd8All is a versatile and comprehensive package update tool meticulously 
-crafted to cater to the needs of Arch Linux users. No more worried about sudo, and continuous 
+crafted to cater to the needs of Arch Linux users. No more worries about sudo, and continuous 
 updating of the system with pacman, yay, and brew.
 -------------------------------------------------------------------------------------
 Creator/Engineer: Felipe Alfonso Gonzalez - github.com/felipealfonsog - f.alfonso@res-ear.ch
@@ -169,7 +169,8 @@ def main():
         package = input("Enter the name of the package to check its version (e.g., gh): ").strip().lower()
         check_package_version(package, package_manager)
 
-    print("Processes completed.")
+    else:
+        print("Processes completed.")
 
 if __name__ == "__main__":
     main()
