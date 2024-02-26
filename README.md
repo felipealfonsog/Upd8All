@@ -31,15 +31,10 @@ Upd8All is a versatile and comprehensive package update tool meticulously crafte
 
 #### New Features
 
--  Yay and Homebrew Existence Verification: The program now checks if the user has Yay and Homebrew installed. If they are installed, they are offered as options for updating packages.
-
-- Warning Messages if Not Installed: If the user does not have Yay or Homebrew installed, a message is displayed indicating that the corresponding tool is not installed.
-
-- Immediate Exit Option: If the user enters 'q' instead of selecting a package manager, the program exits immediately without waiting for the 1-minute timer.
-
-- Enhanced Package Manager Selection: The user can now select the package manager they want to use to check the version of a package. The available options are adapted based on the package managers installed on the system.
-
-- Output Format Correction: Proper line breaks were added after entering the sudo password and before warning messages and package manager selection.
+- Added Feature: Implemented a function prompt_check_package_version() to inquire whether the user wishes to check a package version towards the end of the program.
+- Enhancement: Adjusted the main() function to accommodate the functionality of prompting the user about checking a package version at the end of the program, thereby refining the program flow.
+- Refinement: Eliminated the section of the code associated with the 1-minute timer, as it became redundant.
+- Enhanced User Communication: Included print statements to provide users with updates on the program's progress and notify them when processes have been completed.
 
 
 #### Installation
