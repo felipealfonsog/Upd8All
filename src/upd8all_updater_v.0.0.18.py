@@ -3,6 +3,7 @@ import sys
 import getpass
 import subprocess
 import json
+import signal
 
 # Function to print the welcome message
 def print_welcome_message():
@@ -21,12 +22,17 @@ Developed with love from Chile.
 
 # Function to execute a command with sudo as needed
 def execute_command_with_sudo(command, sudo_password):
+    # Set environment variable to prevent sudo from asking for password
+    env = os.environ.copy()
+    env['SUDO_ASKPASS'] = '/bin/false'
+    
     proc = subprocess.Popen(
         ["sudo", "-S", *command.split()],
         stdin=subprocess.PIPE,
         stdout=sys.stdout,
         stderr=sys.stderr,
-        universal_newlines=True
+        universal_newlines=True,
+        env=env  # Pass the modified environment variable
     )
 
     # Send sudo password
@@ -57,7 +63,20 @@ def update_yay(sudo_password):
         json.dump({"misc": {"save": True}}, f)
   
     command = "yay -Syu --noconfirm"
-    execute_command_with_sudo(command, sudo_password)
+    
+    # Check if sudo is required for the Yay command
+    need_sudo = False
+    try:
+        subprocess.run(command.split(), stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL, check=True)
+    except subprocess.CalledProcessError:
+        need_sudo = True
+    
+    if need_sudo:
+        # Execute the Yay command with sudo if necessary
+        execute_command_with_sudo(command, sudo_password)
+    else:
+        # Execute the Yay command directly without sudo
+        os.system(command)
 
 # Function to update packages with Homebrew
 def update_brew():
@@ -85,9 +104,17 @@ def check_package_version(package, package_manager):
         print(f"No package named '{package}' found in the system.")
         sys.exit(1)
 
+# Handler for the alarm signal
+def alarm_handler(signum, frame):
+    print("\nTime's up. Program execution has ended.\n")
+    sys.exit(0)
+
 def main():
     # Print welcome message
     print_welcome_message()
+
+    # Set up the alarm signal
+    signal.signal(signal.SIGALRM, alarm_handler)
 
     # Check if the user has yay installed
     try:
@@ -107,25 +134,26 @@ def main():
     sudo_password = getpass.getpass(prompt="Enter your sudo password: ")
     print()  # Add a newline after entering the password
 
-    # Ask if the user wants to check a package version at the end
-    response = input("Do you want to check the version of a package at the end? (yes/no): ").strip().lower()
-    check_package_at_end = response == 'yes'
+    while True:
+        signal.alarm(60)  # Set the alarm to trigger after 60 seconds
 
-    # Update packages
-    update_pacman(sudo_password)
+        # Update packages
+        update_pacman(sudo_password)
 
-    if has_yay:
-        update_yay(sudo_password)
-    else:
-        print("You do not have Yay installed.")
+        if has_yay:
+            update_yay(sudo_password)
+        else:
+            print("You do not have Yay installed.")
 
-    if has_brew:
-        update_brew()
-    else:
-        print("You do not have Brew installed.")
+        if has_brew:
+            update_brew()
+        else:
+            print("You do not have Brew installed.")
 
-    # Check package version if requested
-    if check_package_at_end:
+        # Inform the user about program termination after 1 minute of inactivity
+        print("\nNote: If no further input is provided within 1 minute, the program will terminate.\n")
+
+        # Request package name and package manager to check its version
         while True:
             print("Select the package manager to check the version:")
             print("1. Pacman")
@@ -136,6 +164,12 @@ def main():
 
             selected_option = input("Enter the option number (e.g., 1) or 'q' to quit: ").strip().lower()
 
+            # Check if the timer has expired
+            if not signal.getitimer(signal.ITIMER_REAL)[0]:
+                print("\nTime's up. Program execution has ended.\n")
+                sys.exit(0)
+
+            # Check if the user wants to quit
             if selected_option == 'q':
                 print("\nExiting the program.\n")
                 sys.exit(0)
@@ -153,10 +187,11 @@ def main():
         elif selected_option == '3' and has_brew:
             package_manager = "brew"
 
+        # Request package name
         package = input("Enter the name of the package to check its version (e.g., gh): ").strip().lower()
-        check_package_version(package, package_manager)
 
-    print("Processes completed.")
+        # Check the version of the specified package
+        check_package_version(package, package_manager)
 
 if __name__ == "__main__":
     main()
