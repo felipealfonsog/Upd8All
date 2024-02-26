@@ -57,7 +57,7 @@ echo "**************************************************************************
 install_upd8all() {
     # Program name and version
     pkgname="upd8all"
-    pkgver="0.0.18"
+    pkgver="0.0.20"
 
     # Repository URL
     url="https://github.com/felipealfonsog/Upd8All"
