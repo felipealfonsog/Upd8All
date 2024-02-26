@@ -121,7 +121,7 @@ def main():
     print()  # Add a newline after entering the password
 
     # Ask if the user wants to check a package version at the end
-    response = input("Do you want to check the version of a package at the end? (yes/no): ").strip().lower()
+    response = input("Do you want to check the version of a package at the end? (yes/no) [no]: ").strip().lower() or "no"
     check_package_at_end = response == 'yes'
 
     # Update packages
