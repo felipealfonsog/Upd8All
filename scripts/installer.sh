@@ -66,7 +66,7 @@ wget "$url/archive/refs/tags/v.$pkgver.tar.gz"
 
 
 # Extract the source file
-tar xf "v.$pkgver.tar.gz"
+tar -xf "v.$pkgver.tar.gz"
 
 # Install the Python script to /usr/local/bin
 install -Dm755 "Upd8All-v.$pkgver/src/upd8all_updater.py" "/usr/local/bin/upd8all.py"
@@ -79,5 +79,6 @@ install -Dm755 upd8all "/usr/local/bin/upd8all"
 
 # Clean up temporary files
 rm -rf "v.$pkgver.tar.gz" "Upd8All-v.$pkgver"
+rm -rf "upd8all"
 
 echo "The upd8all program has been installed successfully."
