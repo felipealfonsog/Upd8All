@@ -43,6 +43,7 @@ def execute_command_with_sudo(command, sudo_password):
 def update_pacman(sudo_password):
     print("\nUpdating Pacman packages...")
     print("-------------------------------------")
+    command = "pacman -Sc --noconfirm"
     command = "pacman -Syu --noconfirm"
     execute_command_with_sudo(command, sudo_password)
 
