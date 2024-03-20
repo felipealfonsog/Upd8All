@@ -36,6 +36,19 @@ Upd8All is a versatile and comprehensive package update tool meticulously crafte
 - Refinement: Eliminated the section of the code associated with the 1-minute timer, as it became redundant.
 - Enhanced User Communication: Included print statements to provide users with updates on the program's progress and notify them when processes have been completed.
 
+#
+
+#### Screenshots
+
+[![View Screenshot](https://img.shields.io/badge/View-Screenshot-green)](#)
+
+#### Screenshot
+
+<p align="center">
+  <img src="./images/sshot.png" alt="Screenshot" width="400" height="350">
+</p>
+
+#
 
 #### Installation
 #### Via AUR using YAY
