@@ -43,7 +43,6 @@ def execute_command_with_sudo(command, sudo_password):
 def update_pacman(sudo_password):
     print("\nUpdating Pacman packages...")
     print("-------------------------------------")
-    command = "pacman -Sc --noconfirm" # clean up cache
     command = "pacman -Syu --noconfirm"
     execute_command_with_sudo(command, sudo_password)
 
@@ -56,22 +55,16 @@ def update_yay(sudo_password):
     config_file = os.path.join(config_path, "config.json")
     with open(config_file, "w") as f:
         json.dump({"misc": {"save": True}}, f)
-  
+
     command = "yay -Syu --noconfirm"
     
-    # Check if sudo is required for the Yay command
-    need_sudo = False
+    # Try running yay without sudo first
     try:
-        subprocess.run(command.split(), stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL, check=True)
+        result = subprocess.run(command.split(), stdout=subprocess.PIPE, stderr=subprocess.PIPE, check=True)
+        print(result.stdout.decode())
     except subprocess.CalledProcessError:
-        need_sudo = True
-    
-    if need_sudo:
         # Execute the Yay command with sudo if necessary
         execute_command_with_sudo(command, sudo_password)
-    else:
-        # Execute the Yay command directly without sudo
-        os.system(command)
 
 # Function to update packages with Homebrew
 def update_brew():

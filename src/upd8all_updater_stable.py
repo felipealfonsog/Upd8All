@@ -3,7 +3,6 @@ import sys
 import getpass
 import subprocess
 import json
-import signal
 
 # Function to print the welcome message
 def print_welcome_message():
@@ -11,8 +10,8 @@ def print_welcome_message():
 Welcome to the Upd8All Updater ⚙
 =======================================
 Description: Upd8All is a versatile and comprehensive package update tool meticulously 
-crafted to cater to the needs of Arch Linux users. No more worried about sudo, and continuous 
-updating of the system with pacman, yay, and brew (You can even configure this as a service).
+crafted to cater to the needs of Arch Linux users. No more worries about sudo, and continuous 
+updating of the system with pacman, yay, and brew.
 -------------------------------------------------------------------------------------
 Creator/Engineer: Felipe Alfonso Gonzalez - github.com/felipealfonsog - f.alfonso@res-ear.ch
 License: BSD 3-Clause (Restrictive: Ask about it)
@@ -22,17 +21,12 @@ Developed with love from Chile.
 
 # Function to execute a command with sudo as needed
 def execute_command_with_sudo(command, sudo_password):
-    # Set environment variable to prevent sudo from asking for password
-    env = os.environ.copy()
-    env['SUDO_ASKPASS'] = '/bin/false'
-    
     proc = subprocess.Popen(
         ["sudo", "-S", *command.split()],
         stdin=subprocess.PIPE,
         stdout=sys.stdout,
         stderr=sys.stderr,
-        universal_newlines=True,
-        env=env  # Pass the modified environment variable
+        universal_newlines=True
     )
 
     # Send sudo password
@@ -49,6 +43,7 @@ def execute_command_with_sudo(command, sudo_password):
 def update_pacman(sudo_password):
     print("\nUpdating Pacman packages...")
     print("-------------------------------------")
+    command = "pacman -Sc --noconfirm" # clean up cache
     command = "pacman -Syu --noconfirm"
     execute_command_with_sudo(command, sudo_password)
 
@@ -104,17 +99,9 @@ def check_package_version(package, package_manager):
         print(f"No package named '{package}' found in the system.")
         sys.exit(1)
 
-# Handler for the alarm signal
-def alarm_handler(signum, frame):
-    print("\nTime's up. Program execution has ended.\n")
-    sys.exit(0)
-
 def main():
     # Print welcome message
     print_welcome_message()
-
-    # Set up the alarm signal
-    signal.signal(signal.SIGALRM, alarm_handler)
 
     # Check if the user has yay installed
     try:
@@ -134,26 +121,25 @@ def main():
     sudo_password = getpass.getpass(prompt="Enter your sudo password: ")
     print()  # Add a newline after entering the password
 
-    while True:
-        signal.alarm(60)  # Set the alarm to trigger after 60 seconds
+    # Ask if the user wants to check a package version at the end
+    response = input("Do you want to check the version of a package at the end? (yes/no) [no]: ").strip().lower() or "no"
+    check_package_at_end = response == 'yes'
 
-        # Update packages
-        update_pacman(sudo_password)
+    # Update packages
+    update_pacman(sudo_password)
 
-        if has_yay:
-            update_yay(sudo_password)
-        else:
-            print("You do not have Yay installed.")
+    if has_yay:
+        update_yay(sudo_password)
+    else:
+        print("You do not have Yay installed.")
 
-        if has_brew:
-            update_brew()
-        else:
-            print("You do not have Brew installed.")
+    if has_brew:
+        update_brew()
+    else:
+        print("You do not have Brew installed.")
 
-        # Inform the user about program termination after 1 minute of inactivity
-        print("\nNote: If no further input is provided within 1 minute, the program will terminate.\n")
-
-        # Request package name and package manager to check its version
+    # Check package version if requested
+    if check_package_at_end:
         while True:
             print("Select the package manager to check the version:")
             print("1. Pacman")
@@ -164,12 +150,6 @@ def main():
 
             selected_option = input("Enter the option number (e.g., 1) or 'q' to quit: ").strip().lower()
 
-            # Check if the timer has expired
-            if not signal.getitimer(signal.ITIMER_REAL)[0]:
-                print("\nTime's up. Program execution has ended.\n")
-                sys.exit(0)
-
-            # Check if the user wants to quit
             if selected_option == 'q':
                 print("\nExiting the program.\n")
                 sys.exit(0)
@@ -187,11 +167,11 @@ def main():
         elif selected_option == '3' and has_brew:
             package_manager = "brew"
 
-        # Request package name
         package = input("Enter the name of the package to check its version (e.g., gh): ").strip().lower()
-
-        # Check the version of the specified package
         check_package_version(package, package_manager)
+
+    else:
+        print("Processes completed.")
 
 if __name__ == "__main__":
     main()
