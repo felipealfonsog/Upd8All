@@ -77,23 +77,18 @@ Then, run it with the following command:
 apd8all
 ```
 
-#### Cloning the Repository: 
+#### Through Bash script: 
 
  - Clone the Repository
 
 ```
-git clone https://github.com/felipealfonsog/Upd8All.git
-```
-
- - Navigate to the Directory:
-
-```
-cd Upd8All
+wget https://raw.githubusercontent.com/felipealfonsog/Upd8All/refs/heads/main/execute.sh
 ```
 
  - Run the Bash Script:
 
 ```
+chmod +x execute.sh 
 bash execute.sh
 ```
 
