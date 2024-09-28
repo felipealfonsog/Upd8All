@@ -30,13 +30,6 @@ Upd8All is a versatile and comprehensive package update tool meticulously crafte
 
 - Enhanced System Stability and Security: Keeping software up-to-date is crucial for maintaining system stability and security. Upd8All empowers users to stay ahead of potential vulnerabilities by providing timely updates for all installed packages. By ensuring that software components are patched and current, Upd8All contributes to a more secure and reliable computing environment for Arch Linux users.
 
-#### New Features
-
-- Added Feature: Implemented a function prompt_check_package_version() to inquire whether the user wishes to check a package version towards the end of the program.
-- Enhancement: Adjusted the main() function to accommodate the functionality of prompting the user about checking a package version at the end of the program, thereby refining the program flow.
-- Refinement: Eliminated the section of the code associated with the 1-minute timer, as it became redundant.
-- Enhanced User Communication: Included print statements to provide users with updates on the program's progress and notify them when processes have been completed.
-
 #
 
 #### Screenshots
