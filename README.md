@@ -77,7 +77,7 @@ Then, run it with the following command:
 upd8all
 ```
 
-#### Through Bash script: 
+#### Through a Bash script: 
 
  - Download the bash script
 
@@ -89,7 +89,7 @@ curl -O https://raw.githubusercontent.com/felipealfonsog/Upd8All/refs/heads/main
 
 ```
 chmod +x execute.sh 
-bash execute.sh
+./execute.sh
 ```
 
  - Follow the Prompts:
