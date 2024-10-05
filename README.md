@@ -74,7 +74,7 @@ This command will automatically fetch the package from AUR and handle the instal
 Then, run it with the following command:
 
 ```
-apd8all
+upd8all
 ```
 
 #### Through Bash script: 
@@ -82,7 +82,7 @@ apd8all
  - Clone the Repository
 
 ```
-wget https://raw.githubusercontent.com/felipealfonsog/Upd8All/refs/heads/main/execute.sh
+curl -O https://raw.githubusercontent.com/felipealfonsog/Upd8All/refs/heads/main/execute.sh
 ```
 
  - Run the Bash Script:
