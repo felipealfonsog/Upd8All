@@ -79,13 +79,13 @@ upd8all
 
 #### Through Bash script: 
 
- - Clone the Repository
+ - Download the bash script
 
 ```
 curl -O https://raw.githubusercontent.com/felipealfonsog/Upd8All/refs/heads/main/execute.sh
 ```
 
- - Run the Bash Script:
+ - Run the bash script:
 
 ```
 chmod +x execute.sh 
